@@ -1,11 +1,18 @@
-import React from 'react'
+import Footer from "./Components/Footer";
+import Header from "./Components/Header";
+import Hero from "./Components/Hero";
 
-const App = () => {
+
+function App() {
   return (
-    <div className='flex justify-center items-center'>
-<h1>helo word</h1>
+    <div className="min-h-screen bg-white">
+      <Header />
+      <main className="pt-24">
+        <Hero />
+      </main>
+      <Footer />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
