@@ -1,12 +1,26 @@
-
-
-
-import { Bell, Calendar, ChefHat, Sparkles, Zap, Heart } from 'lucide-react';
+import { Bell, Calendar, ChefHat, Sparkles, Zap } from 'lucide-react';
+import group from '../assets/Group1.png';
+import group1 from '../assets/Group2.png';
+import group2 from '../assets/Group3.png';
+import group3 from '../assets/Group4.png';
+import { useState, useEffect } from 'react';
+import SmartMeal from './SmartMeal';
 
 const Hero = () => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const images = [group, group1, group2, group3];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 1000); // Change image every 1 second
+
+    return () => clearInterval(interval);
+  }, [images.length]);
+
   return (
     <>
-      {/* Section 1: Main Hero with Background */}
+      {/* Section 1: Main Hero with Background - UNCHANGED */}
       <section
         className="relative bg-white pt-16 pb-24 px-8 overflow-hidden"
         style={{
@@ -140,7 +154,7 @@ const Hero = () => {
         </div>
       </section>
 
-      {/* Section 2: What is VeraEaty */}
+      {/* Section 2: What is VeraEaty - UPDATED with smooth transition */}
       <section className="bg-gradient-to-br from-pink-50 via-white to-coral-50 py-24 px-8 relative overflow-hidden" id="about">
         {/* Background Decorative Shape */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-coral-100 rounded-full opacity-20 blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
@@ -151,12 +165,20 @@ const Hero = () => {
             <div className="relative order-2 lg:order-1 animate-fadeInUp">
               <div className="relative mx-auto max-w-sm">
                 <div className="relative bg-gradient-to-b from-gray-900 to-gray-800 rounded-[3rem] p-3 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-                  <div className="bg-white rounded-[2.5rem] overflow-hidden">
-                    <img
-                      src="https://images.pexels.com/photos/3184192/pexels-photo-3184192.jpeg?auto=compress&cs=tinysrgb&w=800"
-                      alt="Indian woman cooking"
-                      className="w-full h-full object-cover aspect-[9/16]"
-                    />
+                  <div className="bg-white rounded-[2.5rem] overflow-hidden relative">
+                    {/* Image container with smooth fade transition */}
+                    <div className="relative w-full h-full aspect-[9/16]">
+                      {images.map((image, index) => (
+                        <img
+                          key={index}
+                          src={image}
+                          alt={`VeraEaty feature ${index + 1}`}
+                          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out ${
+                            index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -207,7 +229,7 @@ const Hero = () => {
         </div>
       </section>
 
-      {/* Section 3: Features */}
+      {/* Section 3: Features - UNCHANGED */}
       <section className="bg-white py-24 px-8" id="features">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fadeInUp">
@@ -316,8 +338,6 @@ const Hero = () => {
             </div>
           </div>
 
-         
-
           {/* Launch Section */}
           <div className="  p-12 text-center  animate-fadeInUp">
             <h2 className="text-coral-500 text-4xl lg:text-5xl font-bold mb-4">
@@ -343,6 +363,7 @@ const Hero = () => {
           </div>
         </div>
       </section>
+      <SmartMeal/>
     </>
   );
 };
