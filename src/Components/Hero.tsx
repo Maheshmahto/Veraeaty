@@ -1,8 +1,8 @@
 import { Bell, Calendar, ChefHat, Sparkles, Zap } from 'lucide-react';
-import group from '../assets/Group1.png';
-import group1 from '../assets/Group2.png';
-import group2 from '../assets/Group3.png';
-import group3 from '../assets/Group4.png';
+import group from '../assets/Group_1.png';
+import group1 from '../assets/Group_2.png';
+import group2 from '../assets/Group_3.png';
+import group3 from '../assets/Group_4.png';
 import { useState, useEffect } from 'react';
 import SmartMeal from './SmartMeal';
 
