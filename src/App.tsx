@@ -9,8 +9,9 @@ function App() {
       <Header />
       <main className="pt-24">
         <Hero />
+      
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
