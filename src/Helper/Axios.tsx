@@ -24,29 +24,23 @@
 
 // export default axiosInstance;
 
-
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://veraeaty.ai/",
-  headers: {
+  // baseURL: "https://veraeaty.ai",
+    baseURL: "http://192.168.29.82:8000",
+
+  // headers: {
+  //   "Content-Type": "application/json",
+  //   Accept: "application/json",
+  // },
+   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
+    "ngrok-skip-browser-warning": true,
   },
 });
 
-// Keep your interceptor as is
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = sessionStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+
 
 export default axiosInstance;
