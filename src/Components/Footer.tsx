@@ -75,7 +75,7 @@
 
 
 import React from 'react';
-import { Twitter, Instagram, Facebook, Linkedin } from 'lucide-react';
+import {  Instagram, Facebook, Linkedin } from 'lucide-react';
 import logo from "../assets/Variety Logo.png"
 
 const VeraeatyFooter: React.FC = () => {
@@ -97,9 +97,10 @@ const VeraeatyFooter: React.FC = () => {
             <img 
               src={logo} 
               alt="Veraeaty Logo" 
-              className="mb-2 w-12 h-12 sm:w-16 sm:h-16"
+              className="mb-2 w-12 h-12 lg:h-22 lg:w-30 sm:w-16 sm:h-16"
             />
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-[5px] sm:tracking-[8px] lg:tracking-[10px]">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-medium tracking-[5px] sm:tracking-[8px] lg:tracking-[10px] text-[#1F2937] font-[montserrat]
+">
               VERAEATY
             </h1>
           </div>

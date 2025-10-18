@@ -13,12 +13,12 @@ const Header = () => {
           <img
             src={logo}
             alt="Veraeaty Logo"
-            className="h-8 w-8 md:h-15 md:w-15"
+            className="lg:h-22 lg:w-30 md:h-15 md:w-15 mb-2"
             onError={(e) => {
               e.currentTarget.style.display = "none";
             }}
           />
-          <span className="text-xl md:text-4xl tracking-wide text-gray-900 ml-2 font-montserrat">
+          <span className="text-xl md:text-4xl tracking-widest text-gray-900 ml-2 font-montserrat">
             VERAEATY
           </span>
         </div>
@@ -39,7 +39,7 @@ const Header = () => {
           </a>
           <a
             href="#join"
-            className="text-lg text-orange-500 hover:text-orange-600 transition-colors font-inter"
+            className="text-lg text-[#EA785B] hover:text-orange-600 transition-colors font-inter"
           >
             Join Waitlist
           </a>
