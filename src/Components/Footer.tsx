@@ -103,7 +103,6 @@ const Footer: React.FC = () => {
             </h1>
           </div>
 
-          {/* Right Social Icons */}
           <div className="flex gap-3 flex-1 justify-center lg:justify-end">
             <a href="#" className="w-7 h-7 rounded-full bg-gray-900 flex items-center justify-center hover:bg-gray-700 transition-colors">
               <Instagram className="w-3 h-3 text-white" />

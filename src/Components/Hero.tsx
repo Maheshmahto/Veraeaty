@@ -649,7 +649,7 @@ const Hero1 = () => {
             <div className="relative flex justify-center lg:justify-start">
               <div
                 ref={phoneRef}
-                className="relative w-[320px] lg:aspect-[11/16] 2xl:aspect-[9/16] mx-auto top-8"
+                className="relative w-[320px] lg:aspect-[11/16] 2xl:aspect-[9/16] mx-auto top-12"
               >
                 <div className="relative w-full h-full">
                   <span>
