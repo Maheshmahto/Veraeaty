@@ -790,7 +790,7 @@ const Hero1 = () => {
             <div className="relative flex justify-center lg:justify-start order-2 lg:order-last pb-8 lg:pb-0">
               <div
                 ref={phoneRef}
-                className="relative w-[260px] sm:w-[300px] md:w-[340px] lg:w-[320px] md:aspect-[11/16] md:mt-16 mx-auto"
+                className="relative w-[260px] sm:w-[300px] md:w-[340px] lg:w-[320px] md:aspect-[13/16] md:mt-16 mx-auto"
               >
                 <div className="relative w-full h-full">
                   <span>
@@ -812,14 +812,14 @@ const Hero1 = () => {
                       <img
                         src={img3}
                         alt=""
-                        className="overlay-2 w-24 sm:w-30 md:w-36 lg:w-42 h-auto object-contain z-10000 absolute top-50 sm:top-64 md:top-72 lg:top-80 right-[-24px] sm:right-[-35px] md:right-[-50px] lg:right-[-60px]"
+                        className="overlay-2 w-24 sm:w-30 md:w-36 lg:w-42 h-auto object-contain z-10000 absolute top-50 sm:top-64 md:top-72 lg:top-60 right-[-24px] sm:right-[-35px] md:right-[-50px] lg:right-[-60px]"
                       />
                     )}
                     {showOverlay3 && (
                       <img
                         src={img2}
                         alt=""
-                        className="overlay-3 w-24 sm:w-28 md:w-32 lg:w-40 h-auto object-contain absolute top-72 sm:top-80 md:top-90 lg:top-110 left-[-24px] sm:left-[-35px] md:left-[-50px] lg:left-[-60px]"
+                        className="overlay-3 w-24 sm:w-28 md:w-32 lg:w-40 h-auto object-contain absolute top-72 sm:top-80 md:top-90 lg:top-80 left-[-24px] sm:left-[-35px] md:left-[-50px] lg:left-[-60px]"
                       />
                     )}
                   </span>
@@ -1011,7 +1011,7 @@ const Hero1 = () => {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="mx-4 sm:mx-6 md:mx-10 relative z-10 h-full flex flex-col justify-end pb-8 sm:pb-12 md:pb-15">
+            <div className="mx-4 sm:mx-6 md:mx-10 relative z-10 h-full flex flex-col justify-end pb-8 sm:pb-12 md:pb-15 ">
               <div
                 ref={section3HeadingRef}
                 className={`text-start transition-opacity duration-800 mb-4 sm:mb-6 ${showSection3Heading ? "opacity-100" : "opacity-0"
@@ -1046,7 +1046,7 @@ const Hero1 = () => {
                   ref={section3PhoneRef}
                   className="relative flex-shrink-0 opacity-0"
                 >
-                  <div className="relative w-[260px] h-[450px] sm:w-[300px] sm:h-[500px] md:w-[320px] md:h-[520px] ">
+                  <div className="relative w-[260px] h-[450px] sm:w-[300px] sm:h-[500px] md:w-[290px] md:h-[470px] ">
                     <img
                       src={phonemocup}
                       alt="Phone Mockup"
