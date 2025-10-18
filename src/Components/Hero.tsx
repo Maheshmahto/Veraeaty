@@ -1046,7 +1046,7 @@ const Hero1 = () => {
                   ref={section3PhoneRef}
                   className="relative flex-shrink-0 opacity-0"
                 >
-                  <div className="relative w-[260px] h-[450px] sm:w-[300px] sm:h-[500px] md:w-[290px] md:h-[470px] ">
+                  <div className="relative w-[260px] h-[450px] sm:w-[300px] sm:h-[500px] md:w-[296px] md:h-[470px] ">
                     <img
                       src={phonemocup}
                       alt="Phone Mockup"
