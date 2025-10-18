@@ -8,13 +8,20 @@ import group from "../assets/Group1.png";
 import group1 from "../assets/Group2.png";
 import group2 from "../assets/Group3.png";
 import group3 from "../assets/Group4.png";
-import phoneimg from "../assets/HeroImg.png";
+import phoneimg from "../assets/12.png";
 import smartMeal from "../assets/smartmeal.png";
 import automated from "../assets/automated.png";
 import interactiveAI from "../assets/interactiveai.png";
 import phonemocup from "../assets/phone_moc_up.png";
 import camera from "../assets/Camera.png";
 import Ellipse from "../assets/Ellipse.png";
+import img1 from "../assets/Overlay+Shadow+OverlayBlur.png";
+import img2 from "../assets/Overlay+Shadow+OverlayBlur2.png";
+import img3 from "../assets/Overlay+Shadow+OverlayBlur3.png";
+import bg1 from "../assets/Bg1.png";
+import bg2 from "../assets/Bg2.png";
+import bg3 from "../assets/Bg3.png";
+import "../fonts/font.css";
 import Footer from "./Footer";
 import gsap from "gsap";
 import axiosInstance from "../Helper/Axios";
@@ -32,14 +39,89 @@ const Hero1 = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
-  const containerRef = useRef(null);
-  const section1Ref = useRef(null);
-  const section2Ref = useRef(null);
-  const phoneRef = useRef(null);
-  const carouselRef = useRef(null);
-  const section3PhoneRef = useRef(null);
-  const section3HeadingRef = useRef(null);
-  const scrollTimeout = useRef(null);
+
+  // New states for overlay images
+  const [showOverlay1, setShowOverlay1] = useState(false);
+  const [showOverlay2, setShowOverlay2] = useState(false);
+  const [showOverlay3, setShowOverlay3] = useState(false);
+  const [overlaysVisible, setOverlaysVisible] = useState(true);
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const section1Ref = useRef<HTMLDivElement | null>(null);
+  const section2Ref = useRef<HTMLDivElement | null>(null);
+  const phoneRef = useRef<HTMLDivElement | null>(null);
+  const carouselRef = useRef<HTMLDivElement | null>(null);
+  const section3PhoneRef = useRef<HTMLDivElement | null>(null);
+  const section3HeadingRef = useRef<HTMLDivElement | null>(null);
+  const scrollTimeout = useRef<number | null>(null);
+  const overlayTimeout = useRef<number | null>(null);
+
+  // Effect to show overlay images one by one
+  useEffect(() => {
+    if (currentSection === 1 && overlaysVisible) {
+      // Reset all overlays
+      setShowOverlay1(false);
+      setShowOverlay2(false);
+      setShowOverlay3(false);
+
+      // Show first overlay after a small delay
+      overlayTimeout.current = setTimeout(() => {
+        setShowOverlay1(true);
+        // Animate first image
+        gsap.fromTo(
+          `.overlay-1`,
+          { opacity: 0, y: -20, scale: 0.9 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.2)" }
+        );
+
+        // Show second overlay
+        overlayTimeout.current = setTimeout(() => {
+          setShowOverlay2(true);
+          // Animate second image
+          gsap.fromTo(
+            `.overlay-2`,
+            { opacity: 0, x: 20, scale: 0.9 },
+            { opacity: 1, x: 0, scale: 1, duration: 0.8, ease: "back.out(1.2)" }
+          );
+
+          // Show third overlay
+          overlayTimeout.current = setTimeout(() => {
+            setShowOverlay3(true);
+            // Animate third image
+            gsap.fromTo(
+              `.overlay-3`,
+              { opacity: 0, x: -20, scale: 0.9 },
+              {
+                opacity: 1,
+                x: 0,
+                scale: 1,
+                duration: 0.8,
+                ease: "back.out(1.2)",
+              }
+            );
+          }, 300);
+        }, 400);
+      }, 500);
+
+      return () => {
+        if (overlayTimeout.current) {
+          clearTimeout(overlayTimeout.current);
+        }
+      };
+    }
+  }, [currentSection, overlaysVisible]);
+
+  // Hide overlays when scrolling starts
+  useEffect(() => {
+    if (currentSection !== 1) {
+      setOverlaysVisible(false);
+      setShowOverlay1(false);
+      setShowOverlay2(false);
+      setShowOverlay3(false);
+    } else {
+      setOverlaysVisible(true);
+    }
+  }, [currentSection]);
 
   useEffect(() => {
     gsap.fromTo(
@@ -57,6 +139,12 @@ const Hero1 = () => {
   const showSecondSection = () => {
     if (isTransitioning || currentSection === 2) return;
     setIsTransitioning(true);
+    // Hide overlays immediately when scrolling starts
+    setOverlaysVisible(false);
+    setShowOverlay1(false);
+    setShowOverlay2(false);
+    setShowOverlay3(false);
+
     const tl = gsap.timeline({
       onComplete: () => {
         setIsTransitioning(false);
@@ -103,6 +191,8 @@ const Hero1 = () => {
       onComplete: () => {
         setIsTransitioning(false);
         setCurrentSection(1);
+        // Show overlays again when returning to first section
+        setOverlaysVisible(true);
       },
     });
 
@@ -135,6 +225,7 @@ const Hero1 = () => {
       ease: "power2.inOut",
     });
   };
+
   const showThirdSection = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
@@ -149,14 +240,20 @@ const Hero1 = () => {
     });
 
     // Get current position of phoneRef
-    const phoneRect = phoneRef.current.getBoundingClientRect();
+    const phoneEl = phoneRef.current;
+    if (!phoneEl) {
+      // If the phone element is not available, abort the transition gracefully
+      setIsTransitioning(false);
+      return;
+    }
+    const phoneRect = phoneEl.getBoundingClientRect();
     const currentLeft = phoneRect.left + phoneRect.width / 2;
     const currentTop = phoneRect.top + phoneRect.height / 2;
-    
+
     // Calculate center of screen
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
-    
+
     // Calculate the translation needed from current position to center
     const translateX = centerX - currentLeft;
     const translateY = centerY - currentTop;
@@ -205,7 +302,7 @@ const Hero1 = () => {
           setIsFeatureVisible(true);
           setIsTextVisible(true);
         },
-        null,
+        [],
         2.3
       )
       // Show heading and paragraph
@@ -223,6 +320,7 @@ const Hero1 = () => {
       ease: "power2.inOut",
     });
   };
+
   const showSecondSectionFromThird = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
@@ -251,7 +349,7 @@ const Hero1 = () => {
             height: "550px",
           });
         },
-        null,
+        undefined,
         0.4
       )
       .to(
@@ -293,9 +391,6 @@ const Hero1 = () => {
     { image: smartMeal, title: "Smart Meal Plans", side: "right" },
   ];
 
-
-  
-
   useEffect(() => {
     if (currentSection !== 2) return;
     const interval = setInterval(() => {
@@ -305,7 +400,7 @@ const Hero1 = () => {
   }, [currentSection, images.length]);
 
   useEffect(() => {
-    const handleWheel = (e) => {
+    const handleWheel = (e: any) => {
       if (isTransitioning) {
         e.preventDefault();
         return;
@@ -394,47 +489,53 @@ const Hero1 = () => {
       if (scrollTimeout.current) {
         clearTimeout(scrollTimeout.current);
       }
+      if (overlayTimeout.current) {
+        clearTimeout(overlayTimeout.current);
+      }
     };
   }, [currentSection, currentFeatureIndex, isTransitioning, features.length]);
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setError("");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError("");
 
-  try {
-    const response = await axiosInstance.post(
-      "/api/guest-users/",
-      { email },
-    
-    );
-    
-    // Check for successful status codes (2xx)
-    if (response.status >= 200 && response.status < 300) {
-      setSubmitted(true);
-    } else {
-      setError("Failed to submit. Please try again.");
-    }
-  } catch (error: any) {
-    if (error.response) {
-      if (error.response.status === 400 && error.response.data.detail?.includes("Email already submitted")) {
-        setError("This email is already on our waitlist!");
+    try {
+      const response = await axiosInstance.post("/api/guest-users/", { email });
+      console.log(response);
+
+      // Check for successful status codes (2xx)
+      if (response.status >= 200 && response.status < 300) {
+        setSubmitted(true);
       } else {
-        setError(error.response.data.detail || "Failed to submit. Please try again.");
+        setError("Failed to submit. Please try again.");
       }
-    } else if (error.request) {
-      setError("Network error. Please check your connection.");
-    } else {
-      setError("An unexpected error occurred.");
+    } catch (error: any) {
+      console.log(error);
+      if (error.response) {
+        if (
+          error.response.status === 400 &&
+          error.response.data.detail?.includes("Email already submitted")
+        ) {
+          setError("This email is already on our waitlist!");
+        } else {
+          setError(
+            error.response.data.detail || "Failed to submit. Please try again."
+          );
+        }
+      } else if (error.request) {
+        setError("Network error. Please check your connection.");
+      } else {
+        setError("An unexpected error occurred.");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
   const currentFeature = features[currentFeatureIndex];
 
-  const getTextAnimationClass = (side, isVisible) => {
+  const getTextAnimationClass = (side: string, isVisible: boolean) => {
     if (isVisible) {
       return side === "left" ? "animate-slideInLeft" : "animate-slideInRight";
     } else {
@@ -535,12 +636,12 @@ const Hero1 = () => {
                 Say Goodbye to <br />
                 <span className="text-[#EA785B]">"Aaj Kya Banaye?"</span>
               </h1>
-              <p className="text-gray-600 text-lg max-w-md">
-                A smart, personalized AI meal planner for busy housewife. Made
+              <p className="text-black text-lg max-w-md from-light">
+                A smart, personalized AI meal planner for busy households. Made
                 for moms, families, and food lovers who want variety without the
                 stress.
               </p>
-              <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-full flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+              <button className="bg-[linear-gradient(90deg,#EA785B_0%,#FF8953_100%)] hover:opacity-90 text-white px-6 py-3 rounded-full flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:shadow-lg">
                 <Bell className="w-5 h-5" /> Join Waitlist
               </button>
             </div>
@@ -550,11 +651,37 @@ const Hero1 = () => {
                 className="relative w-[320px] aspect-[9/16] mx-auto"
               >
                 <div className="relative w-full h-full">
-                  <img
-                    src={phoneimg}
-                    alt="VeraEaty App"
-                    className="absolute inset-0 w-full h-full object-contain"
-                  />
+                  <span>
+                    <img
+                      src={phoneimg}
+                      alt="VeraEaty App"
+                      className="inset-0 w-full h-full object-contain"
+                    />
+
+                    {/* Overlay Images with GSAP animations */}
+                    {showOverlay1 && (
+                      <img
+                        src={img1}
+                        alt=""
+                        className="overlay-1 w-60 h-20 z-100000 top-[-32px] left-[-45px] absolute bg-transparent"
+                      />
+                    )}
+                    {showOverlay2 && (
+                      <img
+                        src={img3}
+                        alt=""
+                        className="overlay-2 w-42 h-15 object-contain z-10000 absolute top-86 right-[-60px]"
+                      />
+                    )}
+                    {showOverlay3 && (
+                      <img
+                        src={img2}
+                        alt=""
+                        className="overlay-3 w-40 h-15 object-contain absolute top-110 left-[-60px]"
+                      />
+                    )}
+                  </span>
+
                   <div ref={carouselRef} className="absolute inset-0 opacity-0">
                     {images.map((image, index) => (
                       <img
@@ -580,23 +707,27 @@ const Hero1 = () => {
                   : "opacity-0 z-0 pointer-events-none"
               }`}
             >
+              background: ;
               <div className="max-w-7xl mx-auto h-full flex items-center">
                 <div className="w-full lg:w-1/2"></div>
                 <div className="w-full lg:w-1/2 space-y-4 pl-4">
-                  <h2 className="text-4xl lg:text-5xl font-bold text-orange-500">
+                  <h2
+                    className="text-4xl lg:text-5xl font-bold text-[#EA785B]
+"
+                  >
                     What is VeraEaty?
                   </h2>
-                  <p className="text-gray-800 text-2xl">
+                  <p className="text-black text-2xl font-[Poppins] font-light">
                     VeraEaty is an AI-powered meal planning assistant that helps
                     you:
                   </p>
                   <div className="space-y-6">
                     <div className="flex gap-3 ">
                       <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
-                        <Sparkles className="w-6 h-6 text-orange-500" />
+                        <img src={bg1} alt="" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg mb-1 text-gray-900">
+                        <h3 className="font-semibold text-lg mb-1 text-[#EA785B]">
                           Meals Designed for You
                         </h3>
                         <p className="text-gray-700">
@@ -607,10 +738,11 @@ const Hero1 = () => {
                     </div>
                     <div className="flex gap-3 ">
                       <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
-                        <Calendar className="w-6 h-6 text-green-600" />
+                        {/* <Calendar className="w-6 h-6 text-green-600" /> */}
+                        <img src={bg2} alt="" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg mb-1 text-gray-900">
+                        <h3 className="font-semibold text-lg mb-1 text-[#EA785B]">
                           Groceries, Perfectly Planned
                         </h3>
                         <p className="text-gray-700">
@@ -621,10 +753,11 @@ const Hero1 = () => {
                     </div>
                     <div className="flex gap-3">
                       <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
-                        <ChefHat className="w-6 h-6 text-orange-600" />
+                        {/* <ChefHat className="w-6 h-6 text-orange-600" /> */}
+                        <img src={bg3} alt="" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg mb-1 text-gray-900">
+                        <h3 className="font-semibold text-lg mb-1 text-[#EA785B]">
                           Cook Effortlessly, Waste Nothing
                         </h3>
                         <p className="text-gray-700">
@@ -666,10 +799,10 @@ const Hero1 = () => {
                   showSection3Heading ? "opacity-100" : "opacity-0"
                 }`}
               >
-                <h2 className="text-orange-500 text-4xl lg:text-6xl font-bold mb-4">
+                <h2 className="text-[#EA785B] text-4xl lg:text-6xl font-bold mb-4">
                   Everything You Need for Smart Cooking
                 </h2>
-                <p className="text-gray-600 text-2xl max-w-4xl">
+                <p className="text-[#4B5563] text-2xl max-w-4xl font-inter">
                   Discover the power of AI-driven culinary creativity with
                   features designed to transform your cooking experience.
                 </p>

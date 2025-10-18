@@ -27,8 +27,8 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  // baseURL: "https://veraeaty.ai",
-    baseURL: "http://192.168.29.82:8000",
+  baseURL: "https://veraeaty.ai",
+    // baseURL: "http://192.168.29.82:8000",
 
   // headers: {
   //   "Content-Type": "application/json",
