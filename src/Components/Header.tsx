@@ -18,7 +18,7 @@ const Header = () => {
               e.currentTarget.style.display = "none";
             }}
           />
-          <span className="text-xl md:text-4xl tracking-widest text-gray-900 ml-2 font-montserrat">
+          <span className="text-xl md:text-4xl tracking-widest text-gray-900 ml-2 font-montserrat font-medium">
             VERAEATY
           </span>
         </div>
