@@ -25,7 +25,6 @@ import "../fonts/font.css";
 import Footer from "./Footer";
 import gsap from "gsap";
 import axiosInstance from "../Helper/Axios";
-
 const Hero1 = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const images = [group, group1, group2, group3];
@@ -645,10 +644,12 @@ const Hero1 = () => {
                 <Bell className="w-5 h-5" /> Join Waitlist
               </button>
             </div>
+            {/* className="relative w-[280px] sm:w-[300px] md:w-[320px] lg:w-[350px] xl:w-[380px] 2xl:w-[420px] aspect-[9/16] mx-auto" */}
+
             <div className="relative flex justify-center lg:justify-start">
               <div
                 ref={phoneRef}
-                className="relative w-[320px] aspect-[9/16] mx-auto"
+                className="relative w-[320px] lg:aspect-[11/16] 2xl:aspect-[9/16] mx-auto top-8"
               >
                 <div className="relative w-full h-full">
                   <span>
@@ -830,7 +831,7 @@ const Hero1 = () => {
                   ref={section3PhoneRef}
                   className="relative flex-shrink-0 opacity-0"
                 >
-                  <div className="relative w-[330px] h-[550px]">
+                  <div className="relative w-[330px] h-[550px] top-8">
                     <img
                       src={phonemocup}
                       alt="Phone Mockup"
@@ -878,194 +879,198 @@ const Hero1 = () => {
             </div>
           </div>
         </div>
-        {/* SECTION 4 */}
-        <div
-          className={`absolute inset-0 transition-opacity duration-800 ${
-            currentSection === 4
-              ? "opacity-100 z-10"
-              : "opacity-0 pointer-events-none"
-          }`}
-        >
-          <div className="relative h-full overflow-hidden flex items-center justify-center">
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute top-20 left-10 w-50 h-70 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-float bg-[#EA785B]"></div>
-              <div
-                className="absolute top-60 right-20 w-60 h-70 rounded-full mix-blend-multiply filter blur-3xl opacity-10 bg-[#FF9B7D]"
-                style={{ animationDelay: "1s" }}
-              ></div>
-            </div>
-            <div className="absolute inset-0 pointer-events-none">
-              <div
-                className="absolute top-1/2 left-0 w-full h-px opacity-1 bg-gradient-to-r from-transparent via-[#FF9B7D] to-transparent"
-                style={{ animation: "pulse-slow 4s ease-in-out infinite" }}
-              ></div>
-            </div>
-            <div className="relative z-10 h-full flex items-center justify-center px-8 py-12 mt-42">
-              <div className="w-full">
-                <div className="text-center">
-                  <div className="relative mb-12 flex justify-center">
-                    <div className="backdrop-blur-2xl bg-white/60 max-w-7xl rounded-3xl py-30 p-20 border border-white/60 relative overflow-hidden shadow-2xl shadow-orange-500/15 mx-auto">
-                      <div className="relative flex items-center justify-center gap-8 mb-8">
-                        <div className="relative">
-                          <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl backdrop-blur-xl bg-white/80 border border-white/60 flex items-center justify-center shadow-lg animate-float shadow-orange-500/20">
-                            <img
-                              src={circuitBoard}
-                              alt=""
-                              className="w-12 h-12 object-contain"
-                            />
-                          </div>
-                          <div
-                            className="absolute top-1/2 -right-8 w-16 h-px bg-gradient-to-r from-[#EA785B] to-transparent"
-                            style={{
-                              animation: "pulse-slow 3s ease-in-out infinite",
-                            }}
-                          ></div>
-                        </div>
-                        <div className="relative">
-                          <div className="w-28 h-28 md:w-32 md:h-32 rounded-3xl backdrop-blur-xl bg-gradient-to-br from-white/90 to-white/70 border-2 border-white/80 flex items-center justify-center shadow-2xl shadow-orange-500/40">
-                            <ChefHat className="w-16 h-16 text-orange-500" />
-                            <div
-                              className="absolute inset-0 rounded-3xl border-2 border-[#EA785B] opacity-10"
-                              style={{
-                                animation: "pulse-slow 3s ease-in-out infinite",
-                              }}
-                            ></div>
-                          </div>
-                        </div>
-                        <div className="relative">
-                          <div
-                            className="absolute top-1/2 -left-8 w-16 h-px bg-gradient-to-l from-[#FF9B7D] to-transparent"
-                            style={{
-                              animation: "pulse-slow 3s ease-in-out infinite",
-                              animationDelay: "0.5s",
-                            }}
-                          ></div>
-                          <div
-                            className="w-20 h-20 md:w-24 md:h-24 rounded-2xl backdrop-blur-xl bg-white/80 border border-white/60 flex items-center justify-center shadow-lg animate-float shadow-orange-300/30"
-                            style={{ animationDelay: "1s" }}
-                          >
-                            <Sparkles className="w-12 h-12 text-orange-500" />
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        className="absolute top-8 left-8 w-12 h-12 rounded-lg bg-white/60 backdrop-blur-sm flex items-center justify-center animate-float"
-                        style={{ animationDelay: "0.5s" }}
-                      >
-                        <img src={Zap} alt="" className="w-6 h-6" />
-                      </div>
-                      <div
-                        className="absolute bottom-8 right-8 w-12 h-12 rounded-lg bg-white/60 backdrop-blur-sm flex items-center justify-center animate-float"
-                        style={{ animationDelay: "1.5s" }}
-                      >
-                        <img src={Heart} alt="" className="w-6 h-6" />
-                      </div>
-                      <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 font-inter px-4 bg-clip-text bg-gradient-to-br from-[#E16D4F] to-[#FF7F45E3] text-transparent text-center">
-                        Smarter Meals Are Loading…
-                      </h1>
-                      <div
-                        className="left-0 w-full h-px opacity-1 bg-gradient-to-r from-transparent via-[#FF9B7D] to-transparent mb-5"
-                        style={{
-                          animation: "pulse-slow 4s ease-in-out infinite",
-                        }}
-                      ></div>
-                      <p className="text-lg md:text-xl text-gray-700 max-w-3xl mb-10 mx-auto leading-relaxed text-center">
-                        From recipes to reality — AI is redefining how we cook,
-                        plan, and eat.
-                      </p>
-                    </div>
+     {/* SECTION 4 */}
+<div
+  className={`absolute inset-0 transition-opacity duration-800 ${
+    currentSection === 4
+      ? "opacity-100 z-10"
+      : "opacity-0 pointer-events-none"
+  }`}
+>
+  <div className="relative h-full overflow-hidden flex items-center justify-center">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute top-20 left-10 w-50 h-70 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-float bg-[#EA785B]"></div>
+      <div
+        className="absolute top-60 right-20 w-60 h-70 rounded-full mix-blend-multiply filter blur-3xl opacity-10 bg-[#FF9B7D]"
+        style={{ animationDelay: "1s" }}
+      ></div>
+    </div>
+    <div className="absolute inset-0 pointer-events-none">
+      <div
+        className="absolute top-1/2 left-0 w-full h-px opacity-1 bg-gradient-to-r from-transparent via-[#FF9B7D] to-transparent"
+        style={{ animation: "pulse-slow 4s ease-in-out infinite" }}
+      ></div>
+    </div>
+    <div className="relative z-10 h-full flex items-center justify-center px-4 sm:px-8 py-8">
+      <div className="w-full">
+        <div className="text-center">
+          <div className="relative flex justify-center">
+            <div className="backdrop-blur-2xl bg-white/60 max-w-4xl rounded-3xl py-16 sm:py-20 p-8 sm:p-12 border border-white/60 relative overflow-hidden shadow-2xl shadow-orange-500/15 mx-auto">
+              <div className="relative flex items-center justify-center gap-6 sm:gap-8 mb-6 sm:mb-8">
+                <div className="relative">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl backdrop-blur-xl bg-white/80 border border-white/60 flex items-center justify-center shadow-lg animate-float shadow-orange-500/20">
+                    <img
+                      src={circuitBoard}
+                      alt=""
+                      className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+                    />
+                  </div>
+                  <div
+                    className="absolute top-1/2 -right-6 sm:-right-8 w-12 sm:w-16 h-px bg-gradient-to-r from-[#EA785B] to-transparent"
+                    style={{
+                      animation: "pulse-slow 3s ease-in-out infinite",
+                    }}
+                  ></div>
+                </div>
+                <div className="relative">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-3xl backdrop-blur-xl bg-gradient-to-br from-white/90 to-white/70 border-2 border-white/80 flex items-center justify-center shadow-2xl shadow-orange-500/40">
+                    <ChefHat className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 text-orange-500" />
+                    <div
+                      className="absolute inset-0 rounded-3xl border-2 border-[#EA785B] opacity-10"
+                      style={{
+                        animation: "pulse-slow 3s ease-in-out infinite",
+                      }}
+                    ></div>
+                  </div>
+                </div>
+                <div className="relative">
+                  <div
+                    className="absolute top-1/2 -left-6 sm:-left-8 w-12 sm:w-16 h-px bg-gradient-to-l from-[#FF9B7D] to-transparent"
+                    style={{
+                      animation: "pulse-slow 3s ease-in-out infinite",
+                      animationDelay: "0.5s",
+                    }}
+                  ></div>
+                  <div
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl backdrop-blur-xl bg-white/80 border border-white/60 flex items-center justify-center shadow-lg animate-float shadow-orange-300/30"
+                    style={{ animationDelay: "1s" }}
+                  >
+                    <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-orange-500" />
                   </div>
                 </div>
               </div>
+              <div
+                className="absolute top-6 left-6 w-10 h-10 rounded-lg bg-white/60 backdrop-blur-sm flex items-center justify-center animate-float"
+                style={{ animationDelay: "0.5s" }}
+              >
+                <img src={Zap} alt="" className="w-4 h-4 sm:w-5 sm:h-5" />
+              </div>
+              <div
+                className="absolute bottom-6 right-6 w-10 h-10 rounded-lg bg-white/60 backdrop-blur-sm flex items-center justify-center animate-float"
+                style={{ animationDelay: "1.5s" }}
+              >
+                <img src={Heart} alt="" className="w-4 h-4 sm:w-5 sm:h-5" />
+              </div>
+              
+              {/* Fixed heading with proper sizing */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 font-inter px-4 bg-clip-text bg-gradient-to-br from-[#E16D4F] to-[#FF7F45E3] text-transparent text-center leading-tight">
+                Smarter Meals Are Loading…
+              </h1>
+              
+              <div
+                className="left-0 w-full h-px opacity-1 bg-gradient-to-r from-transparent via-[#FF9B7D] to-transparent mb-4 sm:mb-5"
+                style={{
+                  animation: "pulse-slow 4s ease-in-out infinite",
+                }}
+              ></div>
+              <p className="text-base sm:text-lg md:text-xl text-gray-700 max-w-2xl sm:max-w-3xl mx-auto leading-relaxed text-center">
+                From recipes to reality — AI is redefining how we cook,
+                plan, and eat.
+              </p>
             </div>
           </div>
         </div>
-        {/* SECTION 5 */}
-        <div
-          className={`absolute inset-0 transition-opacity duration-800 ${
-            currentSection === 5
-              ? "opacity-100 z-10"
-              : "opacity-0 pointer-events-none"
-          }`}
-        >
-          <div className="relative h-full overflow-hidden">
-            <div className="h-full flex flex-col">
-              <div className="flex-1 flex items-center justify-center py-6 px-8">
-                <div className="w-full max-w-4xl mt-20">
-                  <div className="text-center mb-8">
-                    <div className="backdrop-blur-xl max-w-3xl mx-auto p-10 rounded-3xl bg-white/80 border border-white/60 shadow-2xl shadow-orange-500/10">
-                      {!submitted ? (
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                          <div className="relative">
-                            <h1 className="text-4xl md:text-5xl font-bold mb-8 text-black bg-clip-text text-center">
-                              Join the{" "}
-                              <span className="bg-clip-text bg-gradient-to-br from-[#E16D4F] to-[#FF7F45E3] text-transparent">
-                                Veraeaty
-                              </span>{" "}
-                              Revolution
-                            </h1>
-                            <input
-                              type="email"
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                              placeholder="Enter your email"
-                              required
-                              className="w-full max-w-xl px-6 py-4 rounded-full mx-auto block bg-white/90 backdrop-blur-sm border-2 border-gray-200/60 focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-[#EA785B] transition-all duration-300 text-gray-900 placeholder-gray-400 text-lg shadow-md"
-                            />
-                          </div>
-                          {error && (
-                            <div className="text-red-500 text-base mb-2 text-center">
-                              {error}
-                            </div>
-                          )}
-                          <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="w-full max-w-xl mx-auto block px-12 py-4 rounded-full text-white font-semibold text-xl shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-br from-[#EA785B] to-[#FF9B7D] shadow-orange-500/40 hover:shadow-orange-500/50"
-                          >
-                            {isSubmitting ? (
-                              <span className="flex items-center justify-center gap-2">
-                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                Joining...
-                              </span>
-                            ) : (
-                              "Join Waitlist"
-                            )}
-                          </button>
-                        </form>
-                      ) : (
-                        <div className="text-center py-8 animate-fade-in">
-                          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-8 shadow-lg bg-gradient-to-br from-green-500 to-green-600 shadow-green-500/40">
-                            <img src={Heart} alt="" className="w-10 h-10" />
-                          </div>
-                          <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                            Welcome to the revolution!
-                          </h3>
-                          <p className="text-gray-600 text-lg">
-                            Check your inbox for exclusive early access details.
-                          </p>
-                        </div>
-                      )}
-                      <div className="mt-8 py-6">
-                        <p className="text-center text-base text-gray-600 mb-2">
-                          Be among the first to experience AI-powered food
-                          creation.
-                        </p>
-                        <h3 className="text-center text-xl font-medium tracking-wide text-gray-800">
-                          Get exclusive early access, special features, and
-                          lifetime benefits.
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
+      </div>
+    </div>
+  </div>
+</div>
+       
+      {/* SECTION 5 */}
+<div
+  className={`absolute inset-0 transition-opacity duration-800 ${
+    currentSection === 5
+      ? "opacity-100 z-10"
+      : "opacity-0 pointer-events-none"
+  }`}
+>
+  <div className="relative h-full flex flex-col">
+    {/* Main content area - properly centered */}
+    <div className="flex-1 flex items-center justify-center px-4 py-4">
+      <div className="w-full max-w-4xl">
+        <div className="text-center">
+          <div className="backdrop-blur-xl max-w-3xl mx-auto p-6 sm:p-8 md:p-10 rounded-3xl bg-white/80 border border-white/60 shadow-2xl shadow-orange-500/10">
+            {!submitted ? (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="relative">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-black text-center">
+                    Join the{" "}
+                    <span className="bg-clip-text bg-gradient-to-br from-[#E16D4F] to-[#FF7F45E3] text-transparent">
+                      Veraeaty                   
+
+                    </span>{" "}
+                      Revolution
+                  </h1>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    required
+                    className="w-full max-w-md px-4 py-3 sm:px-6 sm:py-4 rounded-full mx-auto block bg-white/90 backdrop-blur-sm border-2 border-gray-200/60 focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-[#EA785B] transition-all duration-300 text-gray-900 placeholder-gray-400 text-base sm:text-lg shadow-md"
+                  />
                 </div>
+                {error && (
+                  <div className="text-red-500 text-sm sm:text-base mb-2 text-center">
+                    {error}
+                  </div>
+                )}
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full max-w-md mx-auto block px-8 py-3 sm:px-12 sm:py-4 rounded-full text-white font-semibold text-lg sm:text-xl shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-br from-[#EA785B] to-[#FF9B7D] shadow-orange-500/40 hover:shadow-orange-500/50"
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Joining...
+                    </span>
+                  ) : (
+                    "Join Waitlist"
+                  )}
+                </button>
+              </form>
+            ) : (
+              <div className="text-center py-6 animate-fade-in">
+                <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full mb-6 shadow-lg bg-gradient-to-br from-green-500 to-green-600 shadow-green-500/40">
+                  <img src={Heart} alt="" className="w-8 h-8 sm:w-10 sm:h-10" />
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+                  Welcome to the revolution!
+                </h3>
+                <p className="text-gray-600 text-base sm:text-lg">
+                  Check your inbox for exclusive early access details.
+                </p>
               </div>
-              <div className="mt-auto">
-                <Footer />
-              </div>
+            )}
+            <div className="mt-6 py-4">
+              <p className="text-center text-sm text-gray-600 mb-2">
+                Be among the first to experience AI-powered food creation.
+              </p>
+              <h3 className="text-center text-lg font-medium tracking-wide text-gray-800">
+                Get exclusive early access, special features, and lifetime benefits.
+              </h3>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    
+    {/* Footer section */}
+    <div className="w-full">
+      <Footer />
+    </div>
+  </div>
+</div>
       </section>
     </>
   );
