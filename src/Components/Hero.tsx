@@ -1,4 +1,4 @@
-import { Bell, Calendar, ChefHat, Sparkles } from "lucide-react";
+import { Bell, ChefHat, Sparkles } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import circuitBoard from "../assets/CircuitBoard.png";
 import Zap from "../assets/Zap.png";
