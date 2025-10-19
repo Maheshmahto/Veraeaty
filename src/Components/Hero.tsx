@@ -1,4 +1,4 @@
-import { Bell, ChefHat, Sparkles } from "lucide-react";
+import { Bell, ChefHat, Sparkles, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import circuitBoard from "../assets/CircuitBoard.png";
 import Zap from "../assets/Zap.png";
@@ -39,6 +39,10 @@ const Hero1 = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [isFirstSection2Visit, setIsFirstSection2Visit] = useState(true);
+  
+  // Popup state
+  const [showWaitlistPopup, setShowWaitlistPopup] = useState(false);
 
   // Features array moved to top to avoid reference errors
   const features = [
@@ -63,6 +67,96 @@ const Hero1 = () => {
   const scrollTimeout = useRef<number | null>(null);
   const overlayTimeout = useRef<number | null>(null);
   const touchStartRef = useRef<number | null>(null);
+  const section2ScrollableRef = useRef<HTMLDivElement | null>(null);
+  const isSection2ScrollingRef = useRef<boolean>(false);
+  const lastScrollTimeRef = useRef<number>(0);
+  const isScrollingRef = useRef<boolean>(false);
+  
+  // Popup ref for animations
+  const popupRef = useRef<HTMLDivElement | null>(null);
+
+  // Function to open waitlist popup
+  const openWaitlistPopup = () => {
+    setShowWaitlistPopup(true);
+    // Reset form state when opening
+    setEmail("");
+    setSubmitted(false);
+    setError("");
+  };
+
+  // Function to close waitlist popup
+  const closeWaitlistPopup = () => {
+    if (popupRef.current) {
+      gsap.to(popupRef.current, {
+        opacity: 0,
+        scale: 0.8,
+        y: 20,
+        duration: 0.2,
+        ease: "power2.in",
+        onComplete: () => {
+          setShowWaitlistPopup(false);
+        }
+      });
+    } else {
+      setShowWaitlistPopup(false);
+    }
+  };
+
+  // Handle popup animations
+  useEffect(() => {
+    if (showWaitlistPopup && popupRef.current) {
+      gsap.fromTo(
+        popupRef.current,
+        { opacity: 0, scale: 0.8, y: 20 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.3, ease: "back.out(1.2)" }
+      );
+    }
+  }, [showWaitlistPopup]);
+
+  // Handle escape key to close popup
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showWaitlistPopup) {
+        closeWaitlistPopup();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [showWaitlistPopup]);
+
+  // Handle backdrop click to close popup
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      closeWaitlistPopup();
+    }
+  };
+
+  // CRITICAL FIX: Force scroll reset whenever we enter Section 2
+  useEffect(() => {
+    if (currentSection === 2 && section2ScrollableRef.current) {
+      // Use setTimeout to ensure DOM is ready
+      setTimeout(() => {
+        if (section2ScrollableRef.current) {
+          section2ScrollableRef.current.scrollTop = 0;
+        }
+      }, 0);
+      
+      // Also try with a small delay
+      setTimeout(() => {
+        if (section2ScrollableRef.current) {
+          section2ScrollableRef.current.scrollTop = 0;
+        }
+      }, 100);
+      
+      // And one more at 300ms
+      setTimeout(() => {
+        if (section2ScrollableRef.current) {
+          section2ScrollableRef.current.scrollTop = 0;
+        }
+      }, 300);
+    }
+  }, [currentSection]);
 
   useEffect(() => {
     if (currentSection === 1 && overlaysVisible) {
@@ -142,11 +236,20 @@ const Hero1 = () => {
     setShowOverlay1(false);
     setShowOverlay2(false);
     setShowOverlay3(false);
+    
+    // Set as first visit when coming from Section 1
+    setIsFirstSection2Visit(true);
+
+    // Reset scroll position when entering Section 2
+    if (section2ScrollableRef.current) {
+      section2ScrollableRef.current.scrollTop = 0;
+    }
 
     const tl = gsap.timeline({
       onComplete: () => {
         setIsTransitioning(false);
         setCurrentSection(2);
+        isSection2ScrollingRef.current = false;
       },
     });
 
@@ -318,7 +421,7 @@ const Hero1 = () => {
           gsap.set(section3PhoneRef.current, { opacity: 1 });
           gsap.set(phoneRef.current, { opacity: 0 });
           gsap.set(phoneRef.current, {
-            x: isMobile ? "0vw" : "-40vw", // Responsive reset
+            x: isMobile ? "0vw" : "-40vw",
             y: "0%",
           });
 
@@ -349,6 +452,17 @@ const Hero1 = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
     setShowSection3Heading(false);
+    
+    // Set as NOT first visit when coming from Section 3
+    setIsFirstSection2Visit(false);
+    
+    // CRITICAL FIX: Reset scroll IMMEDIATELY before any animation starts
+    if (section2ScrollableRef.current) {
+      section2ScrollableRef.current.scrollTop = 0;
+    }
+    
+    // Also update the section state early
+    setCurrentSection(2);
 
     const isMobile = window.innerWidth < 1024;
     const phoneXMove = isMobile ? "0vw" : "-40vw";
@@ -356,6 +470,10 @@ const Hero1 = () => {
     const tl = gsap.timeline({
       onComplete: () => {
         setIsTransitioning(false);
+        // Double-check scroll position after animation
+        if (section2ScrollableRef.current) {
+          section2ScrollableRef.current.scrollTop = 0;
+        }
       },
     });
 
@@ -382,7 +500,7 @@ const Hero1 = () => {
       .to(
         phoneRef.current,
         {
-          x: phoneXMove, // Responsive x position
+          x: phoneXMove,
           y: "0%",
           width: "320px",
           height: "auto",
@@ -419,13 +537,71 @@ const Hero1 = () => {
     return () => clearInterval(interval);
   }, [currentSection, images.length]);
 
+  // Check if Section 2 scrollable content is at bottom
+  const isSection2AtBottom = () => {
+    const scrollable = section2ScrollableRef.current;
+    if (!scrollable) return false;
+    
+    const { scrollTop, scrollHeight, clientHeight } = scrollable;
+    return scrollTop + clientHeight >= scrollHeight - 2;
+  };
+
+  // Check if Section 2 scrollable content is at top
+  const isSection2AtTop = () => {
+    const scrollable = section2ScrollableRef.current;
+    if (!scrollable) return true;
+    
+    return scrollable.scrollTop <= 2;
+  };
+
   // Wheel event handler for desktop
   useEffect(() => {
     const handleWheel = (e: any) => {
-      if (isTransitioning) {
+      if (isTransitioning || showWaitlistPopup) {
         e.preventDefault();
         return;
       }
+
+      // Handle Section 2 scrolling
+      if (currentSection === 2) {
+        const scrollable = section2ScrollableRef.current;
+        if (scrollable) {
+          const delta = e.deltaY;
+          const atBottom = isSection2AtBottom();
+          const atTop = isSection2AtTop();
+          
+          // If scrolling down and at bottom, proceed to next section
+          if (delta > 0 && atBottom) {
+            e.preventDefault();
+            if (scrollTimeout.current) {
+              clearTimeout(scrollTimeout.current);
+            }
+            scrollTimeout.current = setTimeout(() => {
+              setCurrentSection(3);
+              setCurrentFeatureIndex(0);
+              showThirdSection();
+            }, 100);
+            return;
+          }
+          
+          // If scrolling up and at top, go back to previous section
+          if (delta < 0 && atTop) {
+            e.preventDefault();
+            if (scrollTimeout.current) {
+              clearTimeout(scrollTimeout.current);
+            }
+            scrollTimeout.current = setTimeout(() => {
+              setCurrentSection(1);
+              showFirstSection();
+            }, 100);
+            return;
+          }
+          
+          // Otherwise, allow normal scrolling within Section 2
+          return;
+        }
+      }
+
       const delta = e.deltaY;
       if (scrollTimeout.current) {
         clearTimeout(scrollTimeout.current);
@@ -435,10 +611,6 @@ const Hero1 = () => {
           if (currentSection === 1) {
             setCurrentSection(2);
             showSecondSection();
-          } else if (currentSection === 2) {
-            setCurrentSection(3);
-            setCurrentFeatureIndex(0);
-            showThirdSection();
           } else if (currentSection === 3) {
             if (currentFeatureIndex < features.length - 1) {
               setIsTransitioning(true);
@@ -514,25 +686,95 @@ const Hero1 = () => {
         clearTimeout(overlayTimeout.current);
       }
     };
-  }, [currentSection, currentFeatureIndex, isTransitioning, features.length]);
+  }, [currentSection, currentFeatureIndex, isTransitioning, features.length, showWaitlistPopup]);
 
   // Touch event handler for mobile
   useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => {
-      // Store initial touch position
+      if (showWaitlistPopup) return;
       touchStartRef.current = e.touches[0].clientY;
+      isScrollingRef.current = false;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!touchStartRef.current || showWaitlistPopup) return;
+      
+      const touchCurrent = e.touches[0].clientY;
+      const delta = Math.abs(touchStartRef.current - touchCurrent);
+      
+      // If user has moved more than 10px, they're scrolling
+      if (delta > 10) {
+        isScrollingRef.current = true;
+      }
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
-      if (!touchStartRef.current || isTransitioning) {
+      if (!touchStartRef.current || isTransitioning || showWaitlistPopup) {
+        touchStartRef.current = null;
+        isScrollingRef.current = false;
         return;
       }
 
       const touchEnd = e.changedTouches[0].clientY;
       const delta = touchStartRef.current - touchEnd;
 
-      // Only trigger on significant swipe (more than 50px)
-      if (Math.abs(delta) < 50) return;
+      // Handle Section 2 scrolling on mobile
+      if (currentSection === 2) {
+        const scrollable = section2ScrollableRef.current;
+        if (scrollable) {
+          const atBottom = isSection2AtBottom();
+          const atTop = isSection2AtTop();
+          
+          const now = Date.now();
+          const timeSinceLastScroll = now - lastScrollTimeRef.current;
+          
+          // Check if this is a deliberate swipe (fast movement)
+          const swipeSpeed = Math.abs(delta) / (now - (touchStartRef.current || now));
+          const isDeliberateSwipe = swipeSpeed > 0.5; // pixels per ms
+          
+          // Scrolling down and at bottom - allow transition
+          if (delta > 80 && atBottom && (isDeliberateSwipe || timeSinceLastScroll > 200)) {
+            if (scrollTimeout.current) {
+              clearTimeout(scrollTimeout.current);
+            }
+            scrollTimeout.current = setTimeout(() => {
+              setCurrentSection(3);
+              setCurrentFeatureIndex(0);
+              showThirdSection();
+            }, 50);
+            touchStartRef.current = null;
+            isScrollingRef.current = false;
+            return;
+          }
+          
+          // Scrolling up and at top - allow transition
+          if (delta < -80 && atTop && (isDeliberateSwipe || timeSinceLastScroll > 200)) {
+            if (scrollTimeout.current) {
+              clearTimeout(scrollTimeout.current);
+            }
+            scrollTimeout.current = setTimeout(() => {
+              setCurrentSection(1);
+              showFirstSection();
+            }, 50);
+            touchStartRef.current = null;
+            isScrollingRef.current = false;
+            return;
+          }
+          
+          // Otherwise, allow normal scrolling within Section 2
+          lastScrollTimeRef.current = now;
+          touchStartRef.current = null;
+          isScrollingRef.current = false;
+          return;
+        }
+      }
+
+      // Only trigger on significant swipe (more than 80px for better control)
+      if (Math.abs(delta) < 80) {
+        touchStartRef.current = null;
+        isScrollingRef.current = false;
+        return;
+      }
 
       if (scrollTimeout.current) {
         clearTimeout(scrollTimeout.current);
@@ -544,10 +786,6 @@ const Hero1 = () => {
           if (currentSection === 1) {
             setCurrentSection(2);
             showSecondSection();
-          } else if (currentSection === 2) {
-            setCurrentSection(3);
-            setCurrentFeatureIndex(0);
-            showThirdSection();
           } else if (currentSection === 3) {
             if (currentFeatureIndex < features.length - 1) {
               setIsTransitioning(true);
@@ -607,22 +845,25 @@ const Hero1 = () => {
           }
         }
         touchStartRef.current = null;
+        isScrollingRef.current = false;
       }, 50);
     };
 
     const container = containerRef.current;
     if (container) {
       container.addEventListener('touchstart', handleTouchStart as EventListener, { passive: true });
+      container.addEventListener('touchmove', handleTouchMove as EventListener, { passive: true });
       container.addEventListener('touchend', handleTouchEnd as EventListener, { passive: true });
     }
 
     return () => {
       if (container) {
         container.removeEventListener('touchstart', handleTouchStart as EventListener);
+        container.removeEventListener('touchmove', handleTouchMove as EventListener);
         container.removeEventListener('touchend', handleTouchEnd as EventListener);
       }
     };
-  }, [currentSection, currentFeatureIndex, isTransitioning, features.length]);
+  }, [currentSection, currentFeatureIndex, isTransitioning, features.length, showWaitlistPopup]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -675,13 +916,17 @@ const Hero1 = () => {
     <>
       <style>{`
         body {
-          overflow: hidden;
+          overflow: ${showWaitlistPopup ? 'hidden' : 'hidden'};
         }
         .overflow-y-auto {
           -webkit-overflow-scrolling: touch;
         }
         .fixed.inset-0.overflow-hidden {
           touch-action: pan-y;
+        }
+        .popup-overlay {
+          background: rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(4px);
         }
         @keyframes slideInRight {
           from { transform: translateX(-40vw); opacity: 0; }
@@ -729,6 +974,98 @@ const Hero1 = () => {
         .animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
         .animate-fade-in { animation: fade-in 0.6s ease-out forwards; }
       `}</style>
+      
+      {/* Waitlist Popup */}
+      {showWaitlistPopup && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 popup-overlay"
+          onClick={handleBackdropClick}
+        >
+          <div 
+            ref={popupRef}
+            className="relative w-full max-w-md mx-auto"
+          >
+            {/* Close Button */}
+            <button
+              onClick={closeWaitlistPopup}
+              className="absolute -top-2 -right-2 z-10 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm border border-gray-200/60 flex items-center justify-center hover:bg-white hover:shadow-lg transition-all duration-200 shadow-lg"
+            >
+              <X className="w-4 h-4 text-gray-600" />
+            </button>
+            
+            {/* Popup Content */}
+            <div className="backdrop-blur-xl w-full mx-auto p-4 sm:p-6 md:p-8 rounded-3xl bg-white/80 border border-white/60 shadow-2xl shadow-orange-500/10 ">
+              {!submitted ? (
+                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                  <div className="relative">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 md:mb-6 text-black text-center">
+                      Join the{" "}
+                      <span className="bg-clip-text bg-gradient-to-br from-[#E16D4F] to-[#FF7F45E3] text-transparent">
+                        Veraeaty
+                      </span>{" "}
+                      Revolution
+                    </h1>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      required
+                      className="w-full px-4 py-3 sm:px-6 sm:py-4 rounded-full bg-white/90 backdrop-blur-sm border-2 border-gray-200/60 focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-[#EA785B] transition-all duration-300 text-gray-900 placeholder-gray-400 text-base sm:text-lg shadow-md"
+                    />
+                  </div>
+                  {error && (
+                    <div className="text-red-500 text-sm sm:text-base mb-2 text-center px-2">
+                      {error}
+                    </div>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full px-6 py-3 sm:px-8 sm:py-4 rounded-full text-white font-semibold text-base sm:text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-br from-[#EA785B] to-[#FF9B7D] shadow-orange-500/40 hover:shadow-orange-500/50"
+                  >
+                    {isSubmitting ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Joining...
+                      </span>
+                    ) : (
+                      "Join Waitlist"
+                    )}
+                  </button>
+                </form>
+              ) : (
+                <div className="text-center py-4 sm:py-6 md:py-8 animate-fade-in">
+                  <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full mb-4 sm:mb-6 md:mb-8 shadow-lg bg-gradient-to-br from-green-500 to-green-600 shadow-green-500/40">
+                    <img src={Heart} alt="" className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />
+                  </div>
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4">
+                    Welcome to the revolution!
+                  </h3>
+                  <p className="text-gray-600 text-sm sm:text-base md:text-lg mb-4 sm:mb-6">
+                    Check your inbox for exclusive early access details.
+                  </p>
+                  <button
+                    onClick={closeWaitlistPopup}
+                    className="px-6 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors duration-200 text-sm sm:text-base"
+                  >
+                    Close
+                  </button>
+                </div>
+              )}
+              <div className="mt-4 sm:mt-6 md:mt-8 py-3 sm:py-4 md:py-6">
+                <p className="text-center text-xs sm:text-sm md:text-base text-gray-600 mb-2">
+                  Be among the first to experience AI-powered food creation.
+                </p>
+                <h3 className="text-center text-sm sm:text-base md:text-lg font-medium tracking-wide text-gray-800">
+                  Get exclusive early access, special features, and lifetime benefits.
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <section
         ref={containerRef}
         className="fixed inset-0 bg-white overflow-hidden"
@@ -747,7 +1084,7 @@ const Hero1 = () => {
         }}
       >
         {/* Decorative icons - responsive */}
-        <div className="absolute top-16 sm:top-20 left-4 sm:left-10 text-orange-400 opacity-30 animate-pulse-slow">
+        <div className="absolute top-100 sm:top-20 left-4 sm:left-10 text-orange-400 opacity-30 animate-pulse-slow">
           <Bell className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
         </div>
         <div className="absolute top-32 sm:top-40 right-8 sm:right-20 text-orange-400 opacity-30 animate-bounce-slow">
@@ -780,7 +1117,10 @@ const Hero1 = () => {
                 stress.
               </p>
               <div className="flex justify-center lg:justify-start">
-                <button className="bg-[linear-gradient(90deg,#EA785B_0%,#FF8953_100%)] hover:opacity-90 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-full flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:shadow-lg text-sm sm:text-base">
+                <button 
+                  onClick={openWaitlistPopup}
+                  className="bg-[linear-gradient(90deg,#EA785B_0%,#FF8953_100%)] hover:opacity-90 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-full flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:shadow-lg text-sm sm:text-base"
+                >
                   <Bell className="w-4 h-4 sm:w-5 sm:h-5" /> Join Waitlist
                 </button>
               </div>
@@ -855,11 +1195,19 @@ const Hero1 = () => {
                 {/* Mobile Layout - Fixed Scrolling with Proper Background */}
                 <div className="w-full h-full lg:hidden flex flex-col bg-gradient-to-br from-rose-50 via-orange-50 to-white">
                   {/* Scrollable Container */}
-                  <div className="w-full h-full overflow-y-auto">
-                    <div className="min-h-full flex flex-col py-20 px-4">
-                      <div className="max-w-md mx-auto space-y-6 flex-shrink-0">
+                  <div 
+                    ref={section2ScrollableRef}
+                    className="w-full h-full overflow-y-auto overscroll-contain"
+                    style={{
+                      WebkitOverflowScrolling: 'touch',
+                      touchAction: 'pan-y',
+                      scrollBehavior: 'smooth'
+                    }}
+                  >
+                    <div className="min-h-full flex flex-col pt-20 pb-40 px-4">
+                      <div className="max-w-md mx-auto space-y-6 flex-shrink-0 flex-1">
                         {/* Phone Image Card */}
-                        <div className="relative bg-white rounded-3xl p-6 shadow-xl">
+                        <div className="relative rounded-3xl pt-4">
                           <div className="relative w-48 h-80 mx-auto">
                             <img
                               src={phoneimg}
@@ -867,7 +1215,7 @@ const Hero1 = () => {
                               className="w-full h-full object-contain"
                             />
                             {/* Show current carousel image inside phone */}
-                            <div className="absolute top-[5px] left-[13px] right-[13px] bottom-[4px] overflow-hidden rounded-[35px]">
+                            <div className="absolute top-[2px] left-[13px] right-[13px] bottom-[2px] overflow-hidden rounded-[30px]">
                               <img
                                 src={images[currentImageIndex]}
                                 alt={`VeraEaty feature ${currentImageIndex + 1}`}
@@ -877,22 +1225,22 @@ const Hero1 = () => {
                           </div>
                         </div>
 
-                        {/* Content Card */}
-                        <div className="bg-white rounded-3xl p-6 shadow-xl space-y-4 ">
-                          <h2 className="text-2xl sm:text-3xl font-bold text-[#EA785B] text-center">
+                        {/* Content Card with Conditional Padding */}
+                        <div className={`${isFirstSection2Visit ? 'pb-8' : 'pb-12'}`}>
+                          <h2 className="text-2xl sm:text-3xl font-bold text-[#EA785B] text-center mb-3">
                             What is VeraEaty?
                           </h2>
-                          <p className="text-black text-base font-[Poppins] font-light text-center">
+                          <p className="text-black text-base font-[Poppins] font-light text-center mb-6">
                             VeraEaty is an AI-powered meal planning assistant that helps you:
                           </p>
                           
-                          <div className="space-y-4 pt-4">
+                          <div className="space-y-4">
                             <div className="flex gap-3 items-start bg-orange-50 rounded-2xl p-4 transition-all hover:shadow-md">
                               <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center">
                                 <img src={bg1} alt="" className="w-6 h-6" />
                               </div>
                               <div className="flex-1">
-                                <h3 className="font-semibold text-base mb-1 text-[#EA785B]">
+                                <h3 className="font-semibold text-base mb-2 text-[#EA785B]">
                                   Meals Designed for You
                                 </h3>
                                 <p className="text-gray-700 text-sm leading-relaxed">
@@ -906,7 +1254,7 @@ const Hero1 = () => {
                                 <img src={bg2} alt="" className="w-6 h-6" />
                               </div>
                               <div className="flex-1">
-                                <h3 className="font-semibold text-base mb-1 text-[#EA785B]">
+                                <h3 className="font-semibold text-base mb-2 text-[#EA785B]">
                                   Groceries, Perfectly Planned
                                 </h3>
                                 <p className="text-gray-700 text-sm leading-relaxed">
@@ -920,7 +1268,7 @@ const Hero1 = () => {
                                 <img src={bg3} alt="" className="w-6 h-6" />
                               </div>
                               <div className="flex-1">
-                                <h3 className="font-semibold text-base mb-1 text-[#EA785B]">
+                                <h3 className="font-semibold text-base mb-2 text-[#EA785B]">
                                   Cook Effortlessly, Waste Nothing
                                 </h3>
                                 <p className="text-gray-700 text-sm leading-relaxed">
@@ -929,6 +1277,9 @@ const Hero1 = () => {
                               </div>
                             </div>
                           </div>
+
+                          {/* Added extra space at bottom to ensure scrollability */}
+                          <div className="h-8"></div>
                         </div>
                       </div>
                     </div>
@@ -1011,7 +1362,7 @@ const Hero1 = () => {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="mx-4 sm:mx-6 md:mx-10 relative z-10 h-full flex flex-col justify-end pb-8 sm:pb-12 md:pb-15 ">
+            <div className="mx-4 sm:mx-6 md:mx-10 relative z-10 h-full flex flex-col justify-end pb-8 sm:pb-12 md:pb-15">
               <div
                 ref={section3HeadingRef}
                 className={`text-start transition-opacity duration-800 mb-4 sm:mb-6 ${showSection3Heading ? "opacity-100" : "opacity-0"
@@ -1046,18 +1397,18 @@ const Hero1 = () => {
                   ref={section3PhoneRef}
                   className="relative flex-shrink-0 opacity-0"
                 >
-                  <div className="relative w-[260px] h-[450px] sm:w-[300px] sm:h-[500px] md:w-[296px] md:h-[470px] ">
+                  <div className="relative w-[260px] h-[450px] sm:w-[300px] sm:h-[500px] md:w-[296px] md:h-[470px]">
                     <img
                       src={phonemocup}
                       alt="Phone Mockup"
-                      className="absolute inset-0 w-full h-full object-contain pointer-events-none "
+                      className="absolute inset-0 w-full h-full object-contain pointer-events-none"
                     />
                     <img
                       src={camera}
                       alt="Camera"
                       className="absolute top-3 sm:top-4 left-1/2 transform -translate-x-1/2 w-12 sm:w-14 z-20 h-3 sm:h-4 pointer-events-none"
                     />
-                    <div className="absolute top-[5px] sm:top-[6px] left-[26px] sm:left-[32px] right-[26px] sm:right-[32px] bottom-[4px] sm:bottom-[5px] overflow-hidden rounded-[35px] sm:rounded-[40px] z-0">
+                    <div className="absolute top-[5px] sm:top-[6px] left-[19px] sm:left-[32px] right-[20px] sm:right-[32px] bottom-[4px] sm:bottom-[5px] overflow-hidden rounded-[35px] sm:rounded-[40px] z-0">
                       <div
                         className={`w-full h-full transition-opacity duration-1000 ${isFeatureVisible ? "opacity-100" : "opacity-0"
                           }`}
@@ -1117,78 +1468,76 @@ const Hero1 = () => {
             <div className="relative z-10 h-full flex items-center justify-center px-4 sm:px-8 py-8 sm:py-12">
               <div className="w-full">
                 <div className="text-center">
-                  <div className="relative flex justify-center">
-                    <div className="backdrop-blur-2xl bg-white/60 max-w-5xl rounded-3xl py-12 sm:py-16 md:py-20 lg:py-24 px-6 sm:px-10 md:px-16 lg:px-20 border border-white/60 relative overflow-hidden shadow-2xl shadow-orange-500/15 mx-auto">
-                      <div className="relative flex items-center justify-center gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
-                        <div className="relative">
-                          <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-2xl backdrop-blur-xl bg-white/80 border border-white/60 flex items-center justify-center shadow-lg animate-float shadow-orange-500/20">
-                            <img
-                              src={circuitBoard}
-                              alt=""
-                              className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 object-contain"
-                            />
-                          </div>
+                  <div className="backdrop-blur-2xl bg-white/60 max-w-5xl rounded-3xl py-12 sm:py-16 md:py-20 lg:py-24 px-6 sm:px-10 md:px-16 lg:px-20 border border-white/60 relative overflow-hidden shadow-2xl shadow-orange-500/15 mx-auto">
+                    <div className="relative flex items-center justify-center gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
+                      <div className="relative">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-2xl backdrop-blur-xl bg-white/80 border border-white/60 flex items-center justify-center shadow-lg animate-float shadow-orange-500/20">
+                          <img
+                            src={circuitBoard}
+                            alt=""
+                            className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 object-contain"
+                          />
+                        </div>
+                        <div
+                          className="absolute top-1/2 -right-4 sm:-right-6 md:-right-8 w-8 sm:w-12 md:w-16 h-px bg-gradient-to-r from-[#EA785B] to-transparent"
+                          style={{
+                            animation: "pulse-slow 3s ease-in-out infinite",
+                          }}
+                        ></div>
+                      </div>
+                      <div className="relative">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-3xl backdrop-blur-xl bg-gradient-to-br from-white/90 to-white/70 border-2 border-white/80 flex items-center justify-center shadow-2xl shadow-orange-500/40">
+                          <ChefHat className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 text-orange-500" />
                           <div
-                            className="absolute top-1/2 -right-4 sm:-right-6 md:-right-8 w-8 sm:w-12 md:w-16 h-px bg-gradient-to-r from-[#EA785B] to-transparent"
+                            className="absolute inset-0 rounded-3xl border-2 border-[#EA785B] opacity-10"
                             style={{
                               animation: "pulse-slow 3s ease-in-out infinite",
                             }}
                           ></div>
                         </div>
-                        <div className="relative">
-                          <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-3xl backdrop-blur-xl bg-gradient-to-br from-white/90 to-white/70 border-2 border-white/80 flex items-center justify-center shadow-2xl shadow-orange-500/40">
-                            <ChefHat className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 text-orange-500" />
-                            <div
-                              className="absolute inset-0 rounded-3xl border-2 border-[#EA785B] opacity-10"
-                              style={{
-                                animation: "pulse-slow 3s ease-in-out infinite",
-                              }}
-                            ></div>
-                          </div>
-                        </div>
-                        <div className="relative">
-                          <div
-                            className="absolute top-1/2 -left-4 sm:-left-6 md:-left-8 w-8 sm:w-12 md:w-16 h-px bg-gradient-to-l from-[#FF9B7D] to-transparent"
-                            style={{
-                              animation: "pulse-slow 3s ease-in-out infinite",
-                              animationDelay: "0.5s",
-                            }}
-                          ></div>
-                          <div
-                            className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-2xl backdrop-blur-xl bg-white/80 border border-white/60 flex items-center justify-center shadow-lg animate-float shadow-orange-300/30"
-                            style={{ animationDelay: "1s" }}
-                          >
-                            <Sparkles className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 text-orange-500" />
-                          </div>
+                      </div>
+                      <div className="relative">
+                        <div
+                          className="absolute top-1/2 -left-4 sm:-left-6 md:-left-8 w-8 sm:w-12 md:w-16 h-px bg-gradient-to-l from-[#FF9B7D] to-transparent"
+                          style={{
+                            animation: "pulse-slow 3s ease-in-out infinite",
+                            animationDelay: "0.5s",
+                          }}
+                        ></div>
+                        <div
+                          className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-2xl backdrop-blur-xl bg-white/80 border border-white/60 flex items-center justify-center shadow-lg animate-float shadow-orange-300/30"
+                          style={{ animationDelay: "1s" }}
+                        >
+                          <Sparkles className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 text-orange-500" />
                         </div>
                       </div>
-                      <div
-                        className="absolute top-4 sm:top-6 md:top-8 left-4 sm:left-6 md:left-8 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg bg-white/60 backdrop-blur-sm flex items-center justify-center animate-float"
-                        style={{ animationDelay: "0.5s" }}
-                      >
-                        <img src={Zap} alt="" className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
-                      </div>
-                      <div
-                        className="absolute bottom-4 sm:bottom-6 md:bottom-8 right-4 sm:right-6 md:right-8 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg bg-white/60 backdrop-blur-sm flex items-center justify-center animate-float"
-                        style={{ animationDelay: "1.5s" }}
-                      >
-                        <img src={Heart} alt="" className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
-                      </div>
-
-                      <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold mb-4 sm:mb-6 md:mb-8 font-inter px-2 sm:px-4 bg-clip-text bg-gradient-to-br from-[#E16D4F] to-[#FF7F45E3] text-transparent text-center leading-tight">
-                        Smarter Meals Are Loading…
-                      </h1>
-
-                      <div
-                        className="left-0 w-full h-px opacity-1 bg-gradient-to-r from-transparent via-[#FF9B7D] to-transparent mb-3 sm:mb-4 md:mb-5"
-                        style={{
-                          animation: "pulse-slow 4s ease-in-out infinite",
-                        }}
-                      ></div>
-                      <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 max-w-xl sm:max-w-2xl md:max-w-3xl mx-auto leading-relaxed text-center px-2">
-                        From recipes to reality — AI is redefining how we cook, plan, and eat.
-                      </p>
                     </div>
+                    <div
+                      className="absolute top-4 sm:top-6 md:top-8 left-4 sm:left-6 md:left-8 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg bg-white/60 backdrop-blur-sm flex items-center justify-center animate-float"
+                      style={{ animationDelay: "0.5s" }}
+                    >
+                      <img src={Zap} alt="" className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                    </div>
+                    <div
+                      className="absolute bottom-4 sm:bottom-6 md:bottom-8 right-4 sm:right-6 md:right-8 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg bg-white/60 backdrop-blur-sm flex items-center justify-center animate-float"
+                      style={{ animationDelay: "1.5s" }}
+                    >
+                      <img src={Heart} alt="" className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                    </div>
+
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold mb-4 sm:mb-6 md:mb-8 font-inter px-2 sm:px-4 bg-clip-text bg-gradient-to-br from-[#E16D4F] to-[#FF7F45E3] text-transparent text-center leading-tight">
+                      Smarter Meals Are Loading…
+                    </h1>
+
+                    <div
+                      className="left-0 w-full h-px opacity-1 bg-gradient-to-r from-transparent via-[#FF9B7D] to-transparent mb-3 sm:mb-4 md:mb-5"
+                      style={{
+                        animation: "pulse-slow 4s ease-in-out infinite",
+                      }}
+                    ></div>
+                    <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 max-w-xl sm:max-w-2xl md:max-w-3xl mx-auto leading-relaxed text-center px-2">
+                      From recipes to reality — AI is redefining how we cook, plan, and eat.
+                    </p>
                   </div>
                 </div>
               </div>
