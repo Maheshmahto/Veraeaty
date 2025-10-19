@@ -52,8 +52,8 @@ const Hero1 = () => {
 
   // Features array moved to top to avoid reference errors
   const features = [
-    { image: aiRecipe, title: "AI Recipe Creator", side: "left" },
-    { image: automated, title: "Automated Grocery Lists", side: "right" },
+    { image: automated, title: "AI Recipe Creator", side: "left" },
+    { image: aiRecipe, title: "Automated Grocery Lists", side: "right" },
     { image: interactiveAI, title: "Interactive AI Chatbot", side: "left" },
     { image: smartMeal, title: "Smart Meal Plans", side: "right" },
   ];
