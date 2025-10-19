@@ -2,7 +2,6 @@
 import logo from "../assets/Variety Logo.png";
 
 const Header = () => {
-  // const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md">
