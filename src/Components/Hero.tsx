@@ -1180,7 +1180,7 @@ const Hero1 = () => {
             <div className="relative flex justify-center order-2 pb-8 lg:justify-start lg:order-last lg:pb-0">
               <div
                 ref={phoneRef}
-                className="relative w-[260px] sm:w-[300px] md:w-[340px] lg:w-[320px] aspect-[15/18] md:aspect-[13/16] 2xl:aspect-[12/19]  md:mt-0 lg:mt-16 mx-auto"
+                className="relative w-[260px] sm:w-[300px] md:w-[340px] lg:w-[320px] aspect-[20/24] lg:aspect-[10/16] 2xl:aspect-[12/19]  md:mt-0 lg:mt-16 mx-auto"
               >
                 <div className="relative w-full h-full">
                   <span>
@@ -1209,7 +1209,7 @@ const Hero1 = () => {
                       <img
                         src={img2}
                         alt=""
-                        className="overlay-3 w-24 sm:w-28 md:w-32 lg:w-40 h-auto object-contain absolute top-60 sm:top-80 md:top-80 lg:top-70 2xl:top-100 left-[-24px] sm:left-[-35px] md:left-[-50px] lg:left-[-80px] 2xl:left-[-100px]"
+                        className="overlay-3 w-24 sm:w-28 md:w-32 lg:w-40 h-auto object-contain absolute top-60 sm:top-80 md:top-80 lg:top-100  left-[-24px] sm:left-[-35px] md:left-[-50px] lg:left-[-80px] 2xl:left-[-100px]"
                       />
                     )}
                   </span>
@@ -1458,7 +1458,7 @@ const Hero1 = () => {
                       alt="Camera"
                       className="absolute z-20 w-12 h-3 transform -translate-x-1/2 pointer-events-none top-3 sm:top-3 left-1/2 sm:w-14 sm:h-4"
                     />
-                    <div className="absolute top-[5px] sm:top-[7px] left-[20px] sm:left-[29px] 2xl:left-[25px] right-[20px] sm:right-[29px] 2xl:right-[27px] bottom-[4px] sm:bottom-[5px] overflow-hidden rounded-[35px] sm:rounded-[38px] z-0">
+                    <div className="absolute top-[5px] sm:top-[7px] left-[20px] sm:left-[27px] 2xl:left-[25px] right-[22px] sm:right-[29px] 2xl:right-[27px] bottom-[4px] sm:bottom-[5px] overflow-hidden rounded-[35px] sm:rounded-[38px] z-0">
                       <div
                         className={`w-full h-full transition-opacity duration-1000 ${isFeatureVisible ? "opacity-100" : "opacity-0"
                           }`}
