@@ -94,12 +94,12 @@ const Hero1 = () => {
           isHeaderVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
         }`}
       >
-        <div className="px-4 sm:px-6 md:px-20 mx-auto flex items-center justify-center py-3 md:py-4">
+        <div className="flex items-center justify-center px-4 py-3 mx-auto sm:px-6 md:px-20 md:py-3">
           <div className="flex items-center">
             <img
               src={logo}
               alt="Veraeaty Logo"
-              className="h-12 w-auto sm:h-12 md:h-14 lg:h-20 mb-2"
+              className="w-auto h-12 mb-2 sm:h-12 md:h-14 lg:h-20"
               onError={(e) => {
                 e.currentTarget.style.display = "none";
               }}
@@ -342,9 +342,13 @@ const Hero1 = () => {
     });
   };
 
-  const showFirstSection = () => {
+ const showFirstSection = () => {
     if (isTransitioning || currentSection === 1) return;
     setIsTransitioning(true);
+    
+    // CRITICAL: Hide carousel immediately when returning to Section 1
+    gsap.set(carouselRef.current, { opacity: 0 });
+    
     const tl = gsap.timeline({
       onComplete: () => {
         setIsTransitioning(false);
@@ -362,6 +366,11 @@ const Hero1 = () => {
         duration: 0.4,
         ease: "power2.inOut",
       })
+        .to(
+          carouselRef.current,
+          { opacity: 0, duration: 0.1, ease: "power2.inOut" },
+          0
+        )
         .to(phoneRef.current, { opacity: 1, duration: 0.4 }, 0.2)
         .fromTo(
           section1Ref.current,
@@ -1029,17 +1038,17 @@ const Hero1 = () => {
             {/* Close Button */}
             <button
               onClick={closeWaitlistPopup}
-              className="absolute -top-2 -right-2 z-10 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm border border-gray-200/60 flex items-center justify-center hover:bg-white hover:shadow-lg transition-all duration-200 shadow-lg"
+              className="absolute z-10 flex items-center justify-center w-8 h-8 transition-all duration-200 border rounded-full shadow-lg -top-2 -right-2 bg-white/90 backdrop-blur-sm border-gray-200/60 hover:bg-white hover:shadow-lg"
             >
               <X className="w-4 h-4 text-gray-600" />
             </button>
             
             {/* Popup Content */}
-            <div className="backdrop-blur-xl w-full mx-auto p-4 sm:p-6 md:p-8 rounded-3xl bg-white/80 border border-white/60 shadow-2xl shadow-orange-500/10 ">
+            <div className="w-full p-4 mx-auto border shadow-2xl backdrop-blur-xl sm:p-6 md:p-8 rounded-3xl bg-white/80 border-white/60 shadow-orange-500/10 ">
               {!submitted ? (
                 <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                   <div className="relative">
-                    <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 md:mb-6 text-black text-center">
+                    <h1 className="mb-3 text-xl font-bold text-center text-black sm:text-2xl md:text-3xl lg:text-4xl sm:mb-4 md:mb-6">
                       Join the{" "}
                       <span className="bg-clip-text bg-gradient-to-br from-[#E16D4F] to-[#FF7F45E3] text-transparent">
                         Veraeaty
@@ -1056,7 +1065,7 @@ const Hero1 = () => {
                     />
                   </div>
                   {error && (
-                    <div className="text-red-500 text-sm sm:text-base mb-2 text-center px-2">
+                    <div className="px-2 mb-2 text-sm text-center text-red-500 sm:text-base">
                       {error}
                     </div>
                   )}
@@ -1067,7 +1076,7 @@ const Hero1 = () => {
                   >
                     {isSubmitting ? (
                       <span className="flex items-center justify-center gap-2">
-                        <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <div className="w-4 h-4 border-2 rounded-full sm:w-5 sm:h-5 border-white/30 border-t-white animate-spin"></div>
                         Joining...
                       </span>
                     ) : (
@@ -1076,29 +1085,29 @@ const Hero1 = () => {
                   </button>
                 </form>
               ) : (
-                <div className="text-center py-4 sm:py-6 md:py-8 animate-fade-in">
-                  <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full mb-4 sm:mb-6 md:mb-8 shadow-lg bg-gradient-to-br from-green-500 to-green-600 shadow-green-500/40">
+                <div className="py-4 text-center sm:py-6 md:py-8 animate-fade-in">
+                  <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-full shadow-lg sm:w-16 sm:h-16 md:w-20 md:h-20 sm:mb-6 md:mb-8 bg-gradient-to-br from-green-500 to-green-600 shadow-green-500/40">
                     <img src={Heart} alt="" className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />
                   </div>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4">
+                  <h3 className="mb-2 text-xl font-bold text-gray-900 sm:text-2xl md:text-3xl sm:mb-3 md:mb-4">
                     Welcome to the revolution!
                   </h3>
-                  <p className="text-gray-600 text-sm sm:text-base md:text-lg mb-4 sm:mb-6">
+                  <p className="mb-4 text-sm text-gray-600 sm:text-base md:text-lg sm:mb-6">
                     Check your inbox for exclusive early access details.
                   </p>
                   <button
                     onClick={closeWaitlistPopup}
-                    className="px-6 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors duration-200 text-sm sm:text-base"
+                    className="px-6 py-2 text-sm text-gray-700 transition-colors duration-200 bg-gray-100 rounded-full hover:bg-gray-200 sm:text-base"
                   >
                     Close
                   </button>
                 </div>
               )}
-              <div className="mt-4 sm:mt-6 md:mt-8 py-3 sm:py-4 md:py-6">
-                <p className="text-center text-xs sm:text-sm md:text-base text-gray-600 mb-2">
+              <div className="py-3 mt-4 sm:mt-6 md:mt-8 sm:py-4 md:py-6">
+                <p className="mb-2 text-xs text-center text-gray-600 sm:text-sm md:text-base">
                   Be among the first to experience AI-powered food creation.
                 </p>
-                <h3 className="text-center text-sm sm:text-base md:text-lg font-medium tracking-wide text-gray-800">
+                <h3 className="text-sm font-medium tracking-wide text-center text-gray-800 sm:text-base md:text-lg">
                   Get exclusive early access, special features, and lifetime benefits.
                 </h3>
               </div>
@@ -1109,7 +1118,7 @@ const Hero1 = () => {
 
       <section
         ref={containerRef}
-        className="fixed inset-0 bg-white overflow-hidden"
+        className="fixed inset-0 overflow-hidden bg-white"
         style={{
           backgroundImage:
             currentSection === 1
@@ -1125,34 +1134,34 @@ const Hero1 = () => {
         }}
       >
         {/* Decorative icons - responsive */}
-        <div className="absolute top-100 sm:top-20 left-4 sm:left-10 text-orange-400 opacity-30 animate-pulse-slow">
+        <div className="absolute text-orange-400 top-100 sm:top-20 left-4 sm:left-10 opacity-30 animate-pulse-slow">
           <Bell className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
         </div>
-        <div className="absolute top-32 sm:top-40 right-8 sm:right-20 text-orange-400 opacity-30 animate-bounce-slow">
+        <div className="absolute text-orange-400 top-32 sm:top-40 right-8 sm:right-20 opacity-30 animate-bounce-slow">
           <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
         </div>
-        <div className="absolute bottom-32 sm:bottom-40 left-8 sm:left-20 text-orange-400 opacity-30 animate-pulse-slow">
+        <div className="absolute text-orange-400 bottom-32 sm:bottom-40 left-8 sm:left-20 opacity-30 animate-pulse-slow">
           <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
         </div>
-        <div className="absolute bottom-16 sm:bottom-20 right-4 sm:right-10 text-orange-400 opacity-30 animate-bounce-slow">
+        <div className="absolute text-orange-400 bottom-16 sm:bottom-20 right-4 sm:right-10 opacity-30 animate-bounce-slow">
           <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
         </div>
 
         {/* SECTION 1 & 2 Container */}
-        <div className="max-w-7xl mx-auto relative z-10 px-4 sm:px-6 md:px-8">
+        <div className="relative z-10 px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-center min-h-[100vh]">
             {/* SECTION 1 Text */}
             <div
               ref={section1Ref}
-              className={`space-y-4 md:space-y-6 transition-opacity duration-800 order-1 lg:order-1 pt-20 lg:pt-0 text-center lg:text-left ${
+              className={`space-y-4 md:space-y-6 transition-opacity duration-800 order-1 lg:order-1 pt-25 lg:pt-0 text-center lg:text-left ${
                 currentSection === 1 ? "opacity-100" : "opacity-0"
               }`}
             >
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight">
+              <h1 className="text-3xl font-semibold leading-tight sm:text-4xl md:text-4xl lg:text-6xl">
                 Say Goodbye to <br />
                 <span className="text-[#EA785B]">"Aaj Kya Banaye?"</span>
               </h1>
-              <p className="text-black text-base sm:text-lg max-w-md mx-auto lg:mx-0 from-light">
+              <p className="max-w-md mx-auto text-base text-black sm:text-sm md:text-sm lg:mx-0 from-light">
                 A smart, personalized AI meal planner for busy households. Made
                 for moms, families, and food lovers who want variety without the
                 stress.
@@ -1160,7 +1169,7 @@ const Hero1 = () => {
               <div className="flex justify-center lg:justify-start">
                 <button 
                   onClick={openWaitlistPopup}
-                  className="bg-[linear-gradient(90deg,#EA785B_0%,#FF8953_100%)] hover:opacity-90 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-full flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:shadow-lg text-sm sm:text-base"
+                  className="bg-[linear-gradient(90deg,#EA785B_0%,#FF8953_100%)] hover:opacity-90 text-white px-5 py-2.5 sm:px-6 sm:py-2  lg:py-3 rounded-full flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:shadow-lg text-sm sm:text-base md:text-lg"
                 >
                   <Bell className="w-4 h-4 sm:w-5 sm:h-5" /> Join Waitlist
                 </button>
@@ -1168,17 +1177,17 @@ const Hero1 = () => {
             </div>
 
             {/* Phone Container - responsive */}
-            <div className="relative flex justify-center lg:justify-start order-2 lg:order-last pb-8 lg:pb-0">
+            <div className="relative flex justify-center order-2 pb-8 lg:justify-start lg:order-last lg:pb-0">
               <div
                 ref={phoneRef}
-                className="relative w-[260px] sm:w-[300px] md:w-[340px] lg:w-[320px] md:aspect-[13/16] md:mt-16 mx-auto"
+                className="relative w-[260px] sm:w-[300px] md:w-[340px] lg:w-[320px] aspect-[15/18] md:aspect-[13/16] 2xl:aspect-[12/19]  md:mt-0 lg:mt-16 mx-auto"
               >
                 <div className="relative w-full h-full">
                   <span>
                     <img
                       src={phoneimg}
                       alt="VeraEaty App"
-                      className="inset-0 w-full h-full object-contain"
+                      className="inset-0 object-contain w-full h-full"
                     />
 
                     {/* Overlay Images - scaled for mobile */}
@@ -1186,7 +1195,7 @@ const Hero1 = () => {
                       <img
                         src={img1}
                         alt=""
-                        className="overlay-1 w-32 sm:w-40 md:w-48 lg:w-60 h-auto z-100000 top-[-12px] sm:top-[-20px] md:top-[-28px] lg:top-[-32px] left-[-20px] sm:left-[-30px] md:left-[-40px] lg:left-[-45px] absolute bg-transparent"
+                        className="overlay-1 w-32 sm:w-40 md:w-48 lg:w-60 h-auto z-100000 top-[-12px] sm:top-[-20px] md:top-[-28px] lg:top-[-32px] left-[-20px] sm:left-[-30px] md:left-[-40px] lg:left-[-125px] absolute bg-transparent"
                       />
                     )}
                     {showOverlay2 && (
@@ -1200,7 +1209,7 @@ const Hero1 = () => {
                       <img
                         src={img2}
                         alt=""
-                        className="overlay-3 w-24 sm:w-28 md:w-32 lg:w-40 h-auto object-contain absolute top-72 sm:top-80 md:top-90 lg:top-80 left-[-24px] sm:left-[-35px] md:left-[-50px] lg:left-[-60px]"
+                        className="overlay-3 w-24 sm:w-28 md:w-32 lg:w-40 h-auto object-contain absolute top-60 sm:top-80 md:top-80 lg:top-70 2xl:top-100 left-[-24px] sm:left-[-35px] md:left-[-50px] lg:left-[-80px] 2xl:left-[-100px]"
                       />
                     )}
                   </span>
@@ -1234,7 +1243,7 @@ const Hero1 = () => {
             >
               <div className="w-full h-full lg:max-w-7xl lg:mx-auto lg:flex lg:items-center lg:px-8">
                 {/* Mobile Layout - Fixed Scrolling with Proper Background */}
-                <div className="w-full h-full lg:hidden flex flex-col bg-gradient-to-br from-rose-50 via-orange-50 to-white">
+                <div className="flex flex-col w-full h-full lg:hidden bg-gradient-to-br from-rose-50 via-orange-50 to-white">
                   {/* Scrollable Container */}
                   <div 
                     ref={section2ScrollableRef}
@@ -1245,22 +1254,22 @@ const Hero1 = () => {
                       scrollBehavior: 'smooth'
                     }}
                   >
-                    <div className="min-h-full flex flex-col pt-20 pb-40 px-4">
-                      <div className="max-w-md mx-auto space-y-6 flex-shrink-0 flex-1">
+                    <div className="flex flex-col min-h-full px-4 pt-2 pb-40">
+                      <div className="flex-1 flex-shrink-0 max-w-md mx-auto space-y-6">
                         {/* Phone Image Card */}
-                        <div className="relative rounded-3xl pt-4">
-                          <div className="relative w-48 h-80 mx-auto">
+                        <div className="relative pt-4 rounded-3xl">
+                          <div className="relative w-48 mx-auto h-80">
                             <img
                               src={phoneimg}
                               alt="VeraEaty App"
-                              className="w-full h-full object-contain"
+                              className="object-contain w-full h-full"
                             />
                             {/* Show current carousel image inside phone */}
                             <div className="absolute top-[2px] left-[13px] right-[13px] bottom-[2px] overflow-hidden rounded-[30px]">
                               <img
                                 src={images[currentImageIndex]}
                                 alt={`VeraEaty feature ${currentImageIndex + 1}`}
-                                className="w-full h-full object-cover transition-opacity duration-500"
+                                className="object-cover w-full h-full transition-opacity duration-500"
                               />
                             </div>
                           </div>
@@ -1276,43 +1285,43 @@ const Hero1 = () => {
                           </p>
                           
                           <div className="space-y-4">
-                            <div className="flex gap-3 items-start bg-orange-50 rounded-2xl p-4 transition-all hover:shadow-md">
-                              <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center">
+                            <div className="flex items-start gap-3 p-4 transition-all bg-orange-50 rounded-2xl hover:shadow-md">
+                              <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-white shadow-sm rounded-xl">
                                 <img src={bg1} alt="" className="w-6 h-6" />
                               </div>
                               <div className="flex-1">
                                 <h3 className="font-semibold text-base mb-2 text-[#EA785B]">
                                   Meals Designed for You
                                 </h3>
-                                <p className="text-gray-700 text-sm leading-relaxed">
+                                <p className="text-sm leading-relaxed text-gray-700">
                                   Get personalized meal plans that match your taste, goals, and daily routine.
                                 </p>
                               </div>
                             </div>
 
-                            <div className="flex gap-3 items-start bg-green-50 rounded-2xl p-4 transition-all hover:shadow-md">
-                              <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center">
+                            <div className="flex items-start gap-3 p-4 transition-all bg-green-50 rounded-2xl hover:shadow-md">
+                              <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-white shadow-sm rounded-xl">
                                 <img src={bg2} alt="" className="w-6 h-6" />
                               </div>
                               <div className="flex-1">
                                 <h3 className="font-semibold text-base mb-2 text-[#EA785B]">
                                   Groceries, Perfectly Planned
                                 </h3>
-                                <p className="text-gray-700 text-sm leading-relaxed">
+                                <p className="text-sm leading-relaxed text-gray-700">
                                   Shop smarter with AI-generated lists that save time and prevent overspending.
                                 </p>
                               </div>
                             </div>
 
-                            <div className="flex gap-3 items-start bg-orange-50 rounded-2xl p-4 transition-all hover:shadow-md">
-                              <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center">
+                            <div className="flex items-start gap-3 p-4 transition-all bg-orange-50 rounded-2xl hover:shadow-md">
+                              <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-white shadow-sm rounded-xl">
                                 <img src={bg3} alt="" className="w-6 h-6" />
                               </div>
                               <div className="flex-1">
                                 <h3 className="font-semibold text-base mb-2 text-[#EA785B]">
                                   Cook Effortlessly, Waste Nothing
                                 </h3>
-                                <p className="text-gray-700 text-sm leading-relaxed">
+                                <p className="text-sm leading-relaxed text-gray-700">
                                   Fully stress-free cooking with thoughtful planning that minimizes food waste.
                                 </p>
                               </div>
@@ -1328,9 +1337,9 @@ const Hero1 = () => {
                 </div>
 
                 {/* Desktop Layout - Side by Side (Original) */}
-                <div className="hidden lg:flex w-full items-center px-4">
+                <div className="items-center hidden w-full px-4 lg:flex">
                   <div className="w-1/2"></div>
-                  <div className="w-1/2 space-y-4 pl-4">
+                  <div className="w-1/2 pl-4 space-y-4">
                     <h2 className="text-4xl lg:text-5xl font-bold text-[#EA785B]">
                       What is VeraEaty?
                     </h2>
@@ -1339,7 +1348,7 @@ const Hero1 = () => {
                     </p>
                     <div className="space-y-6">
                       <div className="flex gap-3">
-                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
+                        <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-orange-100 rounded-xl">
                           <img src={bg1} alt="" />
                         </div>
                         <div>
@@ -1352,7 +1361,7 @@ const Hero1 = () => {
                         </div>
                       </div>
                       <div className="flex gap-3">
-                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
+                        <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-green-100 rounded-xl">
                           <img src={bg2} alt="" />
                         </div>
                         <div>
@@ -1365,7 +1374,7 @@ const Hero1 = () => {
                         </div>
                       </div>
                       <div className="flex gap-3">
-                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
+                        <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-orange-100 rounded-xl">
                           <img src={bg3} alt="" />
                         </div>
                         <div>
@@ -1400,10 +1409,10 @@ const Hero1 = () => {
               <img
                 src={Ellipse}
                 alt="Background"
-                className="w-full h-full object-cover"
+                className="object-cover w-full h-full"
               />
             </div>
-            <div className="mx-4 sm:mx-6 md:mx-10 relative z-10 h-full flex flex-col justify-end pb-8 sm:pb-12 md:pb-15">
+            <div className="relative z-10 flex flex-col h-full pb-8 mx-4 mt-10 sm:mx-6 md:mx-10 sm:pb-12 md:pb-15">
               <div
                 ref={section3HeadingRef}
                 className={`text-start transition-opacity duration-800 mb-4 sm:mb-6 ${showSection3Heading ? "opacity-100" : "opacity-0"
@@ -1416,8 +1425,8 @@ const Hero1 = () => {
                   Discover the power of AI-driven culinary creativity with features designed to transform your cooking experience.
                 </p>
               </div>
-              <div className="flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-0">
-                <div className="flex items-center justify-center lg:w-1/2 space-y-6 lg:pl-8 xl:pl-20 relative z-10">
+              <div className="flex flex-col items-center justify-center gap-4 lg:flex-row lg:gap-0">
+                <div className="relative z-10 flex items-center justify-center space-y-6 lg:w-1/2 lg:pl-8 xl:pl-20">
                   {currentFeature.side === "left" && (
                     <div
                       className={`transition-opacity duration-1000 ${isTextVisible ? "opacity-100" : "opacity-0"
@@ -1438,32 +1447,32 @@ const Hero1 = () => {
                   ref={section3PhoneRef}
                   className="relative flex-shrink-0 opacity-0"
                 >
-                  <div className="relative w-[260px] h-[450px] sm:w-[300px] sm:h-[500px] md:w-[296px] md:h-[470px]">
+                  <div className="relative w-[260px] h-[450px] sm:w-[300px] sm:h-[500px] md:w-[305px] md:h-[520px]">
                     <img
                       src={phonemocup}
                       alt="Phone Mockup"
-                      className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                      className="absolute inset-0 object-contain w-full h-full pointer-events-none"
                     />
                     <img
                       src={camera}
                       alt="Camera"
-                      className="absolute top-3 sm:top-4 left-1/2 transform -translate-x-1/2 w-12 sm:w-14 z-20 h-3 sm:h-4 pointer-events-none"
+                      className="absolute z-20 w-12 h-3 transform -translate-x-1/2 pointer-events-none top-3 sm:top-3 left-1/2 sm:w-14 sm:h-4"
                     />
-                    <div className="absolute top-[5px] sm:top-[6px] left-[19px] sm:left-[32px] right-[20px] sm:right-[32px] bottom-[4px] sm:bottom-[5px] overflow-hidden rounded-[35px] sm:rounded-[40px] z-0">
+                    <div className="absolute top-[5px] sm:top-[7px] left-[20px] sm:left-[29px] 2xl:left-[25px] right-[20px] sm:right-[29px] 2xl:right-[27px] bottom-[4px] sm:bottom-[5px] overflow-hidden rounded-[35px] sm:rounded-[38px] z-0">
                       <div
                         className={`w-full h-full transition-opacity duration-1000 ${isFeatureVisible ? "opacity-100" : "opacity-0"
                           }`}
                       >
                         <img
                           src={currentFeature.image}
-                          className="w-full h-full object-cover"
+                          className="object-cover w-full h-full"
                           alt={currentFeature.title}
                         />
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-center lg:w-1/2 space-y-6 lg:pl-8 xl:pl-20 relative z-10">
+                <div className="relative z-10 flex items-center justify-center space-y-6 lg:w-1/2 lg:pl-8 xl:pl-20">
                   {currentFeature.side === "right" && (
                     <div
                       className={`transition-opacity duration-1000 ${isTextVisible ? "opacity-100" : "opacity-0"
@@ -1492,7 +1501,7 @@ const Hero1 = () => {
               : "opacity-0 pointer-events-none"
             }`}
         >
-          <div className="relative h-full overflow-hidden flex items-center justify-center">
+          <div className="relative flex items-center justify-center h-full overflow-hidden">
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
               <div className="absolute top-20 left-10 w-40 h-56 sm:w-50 sm:h-70 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-float bg-[#EA785B]"></div>
               <div
@@ -1506,17 +1515,17 @@ const Hero1 = () => {
                 style={{ animation: "pulse-slow 4s ease-in-out infinite" }}
               ></div>
             </div>
-            <div className="relative z-10 h-full flex items-center justify-center px-4 sm:px-8 py-8 sm:py-12">
+            <div className="relative z-10 flex items-center justify-center h-full px-4 py-8 sm:px-8 sm:py-12">
               <div className="w-full">
                 <div className="text-center">
-                  <div className="backdrop-blur-2xl bg-white/60 max-w-5xl rounded-3xl py-12 sm:py-16 md:py-20 lg:py-24 px-6 sm:px-10 md:px-16 lg:px-20 border border-white/60 relative overflow-hidden shadow-2xl shadow-orange-500/15 mx-auto">
-                    <div className="relative flex items-center justify-center gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
+                  <div className="relative max-w-5xl px-6 py-12 mx-auto overflow-hidden border shadow-2xl backdrop-blur-2xl bg-white/60 rounded-3xl sm:py-16 md:py-20 lg:py-24 sm:px-10 md:px-16 lg:px-20 border-white/60 shadow-orange-500/15">
+                    <div className="relative flex items-center justify-center gap-4 mb-6 sm:gap-6 md:gap-8 sm:mb-8">
                       <div className="relative">
-                        <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-2xl backdrop-blur-xl bg-white/80 border border-white/60 flex items-center justify-center shadow-lg animate-float shadow-orange-500/20">
+                        <div className="flex items-center justify-center border shadow-lg w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-2xl backdrop-blur-xl bg-white/80 border-white/60 animate-float shadow-orange-500/20">
                           <img
                             src={circuitBoard}
                             alt=""
-                            className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 object-contain"
+                            className="object-contain w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12"
                           />
                         </div>
                         <div
@@ -1527,8 +1536,8 @@ const Hero1 = () => {
                         ></div>
                       </div>
                       <div className="relative">
-                        <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-3xl backdrop-blur-xl bg-gradient-to-br from-white/90 to-white/70 border-2 border-white/80 flex items-center justify-center shadow-2xl shadow-orange-500/40">
-                          <ChefHat className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 text-orange-500" />
+                        <div className="flex items-center justify-center w-20 h-20 border-2 shadow-2xl sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-3xl backdrop-blur-xl bg-gradient-to-br from-white/90 to-white/70 border-white/80 shadow-orange-500/40">
+                          <ChefHat className="w-10 h-10 text-orange-500 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16" />
                           <div
                             className="absolute inset-0 rounded-3xl border-2 border-[#EA785B] opacity-10"
                             style={{
@@ -1546,21 +1555,21 @@ const Hero1 = () => {
                           }}
                         ></div>
                         <div
-                          className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-2xl backdrop-blur-xl bg-white/80 border border-white/60 flex items-center justify-center shadow-lg animate-float shadow-orange-300/30"
+                          className="flex items-center justify-center border shadow-lg w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-2xl backdrop-blur-xl bg-white/80 border-white/60 animate-float shadow-orange-300/30"
                           style={{ animationDelay: "1s" }}
                         >
-                          <Sparkles className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 text-orange-500" />
+                          <Sparkles className="text-orange-500 w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12" />
                         </div>
                       </div>
                     </div>
                     <div
-                      className="absolute top-4 sm:top-6 md:top-8 left-4 sm:left-6 md:left-8 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg bg-white/60 backdrop-blur-sm flex items-center justify-center animate-float"
+                      className="absolute flex items-center justify-center w-8 h-8 rounded-lg top-4 sm:top-6 md:top-8 left-4 sm:left-6 md:left-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white/60 backdrop-blur-sm animate-float"
                       style={{ animationDelay: "0.5s" }}
                     >
                       <img src={Zap} alt="" className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
                     </div>
                     <div
-                      className="absolute bottom-4 sm:bottom-6 md:bottom-8 right-4 sm:right-6 md:right-8 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg bg-white/60 backdrop-blur-sm flex items-center justify-center animate-float"
+                      className="absolute flex items-center justify-center w-8 h-8 rounded-lg bottom-4 sm:bottom-6 md:bottom-8 right-4 sm:right-6 md:right-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white/60 backdrop-blur-sm animate-float"
                       style={{ animationDelay: "1.5s" }}
                     >
                       <img src={Heart} alt="" className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
@@ -1576,7 +1585,7 @@ const Hero1 = () => {
                         animation: "pulse-slow 4s ease-in-out infinite",
                       }}
                     ></div>
-                    <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 max-w-xl sm:max-w-2xl md:max-w-3xl mx-auto leading-relaxed text-center px-2">
+                    <p className="max-w-xl px-2 mx-auto text-sm leading-relaxed text-center text-gray-700 sm:text-base md:text-lg lg:text-xl sm:max-w-2xl md:max-w-3xl">
                       From recipes to reality — AI is redefining how we cook, plan, and eat.
                     </p>
                   </div>
@@ -1593,15 +1602,15 @@ const Hero1 = () => {
               : "opacity-0 pointer-events-none"
             }`}
         >
-          <div className="relative h-full flex flex-col">
-            <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-4 sm:py-6">
+          <div className="relative flex flex-col h-full">
+            <div className="flex items-center justify-center flex-1 px-4 py-4 sm:px-6 sm:py-6">
               <div className="w-full max-w-4xl">
                 <div className="text-center">
-                  <div className="backdrop-blur-xl max-w-3xl mx-auto p-6 sm:p-8 md:p-10 rounded-3xl bg-white/80 border border-white/60 shadow-2xl shadow-orange-500/10">
+                  <div className="max-w-3xl p-6 mx-auto border shadow-2xl backdrop-blur-xl sm:p-8 md:p-10 rounded-3xl bg-white/80 border-white/60 shadow-orange-500/10">
                     {!submitted ? (
                       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                         <div className="relative">
-                          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 text-black text-center">
+                          <h1 className="mb-4 text-2xl font-bold text-center text-black sm:text-3xl md:text-4xl lg:text-5xl sm:mb-6">
                             Join the{" "}
                             <span className="bg-clip-text bg-gradient-to-br from-[#E16D4F] to-[#FF7F45E3] text-transparent">
                               Veraeaty
@@ -1618,7 +1627,7 @@ const Hero1 = () => {
                           />
                         </div>
                         {error && (
-                          <div className="text-red-500 text-sm sm:text-base mb-2 text-center">
+                          <div className="mb-2 text-sm text-center text-red-500 sm:text-base">
                             {error}
                           </div>
                         )}
@@ -1629,7 +1638,7 @@ const Hero1 = () => {
                         >
                           {isSubmitting ? (
                             <span className="flex items-center justify-center gap-2">
-                              <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                              <div className="w-4 h-4 border-2 rounded-full sm:w-5 sm:h-5 border-white/30 border-t-white animate-spin"></div>
                               Joining...
                             </span>
                           ) : (
@@ -1638,23 +1647,23 @@ const Hero1 = () => {
                         </button>
                       </form>
                     ) : (
-                      <div className="text-center py-6 sm:py-8 animate-fade-in">
-                        <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full mb-6 sm:mb-8 shadow-lg bg-gradient-to-br from-green-500 to-green-600 shadow-green-500/40">
+                      <div className="py-6 text-center sm:py-8 animate-fade-in">
+                        <div className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-full shadow-lg sm:w-20 sm:h-20 sm:mb-8 bg-gradient-to-br from-green-500 to-green-600 shadow-green-500/40">
                           <img src={Heart} alt="" className="w-8 h-8 sm:w-10 sm:h-10" />
                         </div>
-                        <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
+                        <h3 className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl sm:mb-4">
                           Welcome to the revolution!
                         </h3>
-                        <p className="text-gray-600 text-base sm:text-lg">
+                        <p className="text-base text-gray-600 sm:text-lg">
                           Check your inbox for exclusive early access details.
                         </p>
                       </div>
                     )}
-                    <div className="mt-6 sm:mt-8 py-4 sm:py-6">
-                      <p className="text-center text-sm sm:text-base text-gray-600 mb-2">
+                    <div className="py-4 mt-6 sm:mt-8 sm:py-6">
+                      <p className="mb-2 text-sm text-center text-gray-600 sm:text-base">
                         Be among the first to experience AI-powered food creation.
                       </p>
-                      <h3 className="text-center text-base sm:text-lg md:text-xl font-medium tracking-wide text-gray-800">
+                      <h3 className="text-base font-medium tracking-wide text-center text-gray-800 sm:text-lg md:text-xl">
                         Get exclusive early access, special features, and lifetime benefits.
                       </h3>
                     </div>
