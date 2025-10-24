@@ -1501,7 +1501,7 @@ const Hero1 = () => {
                               </div>
                               <div className="flex-1">
                                 <h3 className="font-semibold text-base mb-1 text-[#EA785B]">
-                                  Cook Effortlessly, Waste Nothing
+                                  Cook Effortlessly
                                 </h3>
                                 <p className="text-sm leading-relaxed text-gray-700">
                                   Fully stress-free cooking with thoughtful
@@ -1565,7 +1565,7 @@ const Hero1 = () => {
                         </div>
                         <div>
                           <h3 className="font-semibold text-lg mb-1 text-[#EA785B]">
-                            Cook Effortlessly, Waste Nothing
+                            Cook Effortlessly
                           </h3>
                           <p className="text-gray-700">
                             Fully stress-free cooking with thoughtful planning
