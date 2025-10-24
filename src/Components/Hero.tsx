@@ -104,7 +104,7 @@ const Hero1 = () => {
             : "-translate-y-full opacity-0"
         }`}
       >
-        <div className="flex items-center justify-center px-4 py-3 mx-auto sm:px-6 md:px-20 md:py-3">
+        <div className="flex items-center justify-center px-4 py-1 mx-auto sm:px-6 md:px-20 md:py-1">
           <div className="flex items-center">
             <img
               src={logo}
@@ -1101,6 +1101,10 @@ const Hero1 = () => {
           from { opacity: 0; transform: scale(0.95); }
           to { opacity: 1; transform: scale(1); }
         }
+        @keyframes zoom-in {
+          from { opacity: 0; transform: scale(0.5); }
+          to { opacity: 1; transform: scale(1); }
+        }
        @keyframes slideUpFromBottom {
   from { transform: translateY(100vh); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
@@ -1122,6 +1126,7 @@ const Hero1 = () => {
         .animate-slideOutRight { animation: slideOutRight 0.5s ease-out forwards; }
         .animate-slideOutLeft { animation: slideOutLeft 0.5s ease-out forwards; }
         .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
+        .animate-zoomIn { animation: zoom-in 0.9s ease-out forwards; }
         .animate-float { animation: float 3s ease-in-out infinite; }
         .animate-pulse-slow { animation: pulse-slow 3s ease-in-out infinite; }
         .animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
@@ -1288,7 +1293,7 @@ const Hero1 = () => {
             <div className="absolute text-orange-400 top-32 sm:top-40 right-8 sm:right-20 opacity-30 animate-bounce-slow">
               <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
             </div>
-            <div className="absolute text-orange-400 bottom-32 sm:bottom-40 left-8 sm:left-20 opacity-30 animate-pulse-slow">
+            <div className="absolute text-orange-400 bottom-25 sm:bottom-40 left-8 sm:left-20 opacity-30 animate-pulse-slow">
               <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
             </div>
             <div className="absolute text-orange-400 bottom-16 sm:bottom-20 right-4 sm:right-10 opacity-30 animate-bounce-slow">
@@ -1303,8 +1308,8 @@ const Hero1 = () => {
             {/* SECTION 1 Text */}
             <div
               ref={section1Ref}
-              className={`mobile-section space-y-4 md:space-y-6 transition-opacity duration-800 order-1 lg:order-1 pt-20 lg:pt-0 text-center lg:text-left ${
-                currentSection === 1
+              className={`mobile-section section-1-text space-y-3 sm:space-y-4 md:space-y-6 transition-opacity duration-800 order-1 lg:order-1 pt-20 sm:pt-16 md:pt-20 lg:pt-0 text-center lg:text-left ${     currentSection === 1
+                
                   ? "opacity-100 block"
                   : "opacity-0 hidden lg:block"
               } ${
@@ -1317,7 +1322,7 @@ const Hero1 = () => {
                 Say Goodbye to <br />
                 <span className="text-[#EA785B]">"Aaj Kya Banaye?"</span>
               </h1>
-              <p className="max-w-md mx-auto text-[14px] black text- sm:text-sm md:text-sm lg:mx-0 from-light">
+              <p className="max-w-md mx-auto text-[13px] black text- sm:text-sm md:text-sm lg:mx-0 from-light">
                 A smart, personalized AI meal planner for busy households. Made
                 for moms, families, and food lovers who want variety without the
                 stress.
@@ -1333,10 +1338,10 @@ const Hero1 = () => {
             </div>
 
             {/* Phone Container - responsive */}
-            <div className="relative flex justify-center order-2 pb-20 lg:justify-start lg:order-last lg:pb-0">
+            <div className="relative flex justify-center order-2 pb-20 lg:justify-start lg:order-last lg:pb-0 animate-zoomIn">
               <div
                 ref={phoneRef}
-                className={`mobile-section relative w-[260px] sm:w-[300px] md:w-[340px] lg:w-[320px] aspect-[20/24] lg:aspect-[10/16] 2xl:aspect-[12/19] md:mt-0 lg:mt-16 mx-auto ${
+                className={`mobile-section relative w-[84%]   sm:w-[80%] md:w-[340px] lg:w-[320px] aspect-[20/24] lg:aspect-[10/16] 2xl:aspect-[12/19] md:mt-0 lg:mt-16 mx-auto ${
                   currentSection === 1 || currentSection === 2
                     ? "block"
                     : "hidden lg:block"
@@ -1351,7 +1356,7 @@ const Hero1 = () => {
                     <img
                       src={phoneimg}
                       alt="VeraEaty App"
-                      className="inset-0 object-contain w-full h-full"
+                      className="inset-0 object-contain w-full h-full animate-zoomIn"
                     />
 
                     {/* Overlay Images - scaled for mobile */}
@@ -1366,14 +1371,14 @@ const Hero1 = () => {
                       <img
                         src={img3}
                         alt=""
-                        className="overlay-2 w-24 sm:w-30 md:w-36 lg:w-42 h-auto object-contain z-10000 absolute top-50 sm:top-64 md:top-72 lg:top-60 right-[-24px] sm:right-[-35px] md:right-[-50px] lg:right-[-60px]"
+                        className="overlay-2 w-24 sm:w-30 md:w-36 lg:w-42 h-auto object-contain z-10000 absolute top-50 sm:top-64 md:top-72 lg:top-60 right-[-15px] sm:right-[-35px] md:right-[-50px] lg:right-[-60px]"
                       />
                     )}
                     {showOverlay3 && (
                       <img
                         src={img2}
                         alt=""
-                        className="overlay-3 w-24 sm:w-28 md:w-32 lg:w-40 h-auto object-contain absolute top-60 sm:top-80 md:top-80 lg:top-100  left-[-24px] sm:left-[-35px] md:left-[-50px] lg:left-[-80px] 2xl:left-[-100px]"
+                        className="overlay-3 w-24 sm:w-28 md:w-32 lg:w-40 h-auto object-contain absolute top-60 sm:top-80 md:top-80 lg:top-100  left-[-16px] sm:left-[-35px] md:left-[-50px] lg:left-[-80px] 2xl:left-[-100px]"
                       />
                     )}
                   </span>
@@ -1610,7 +1615,7 @@ const Hero1 = () => {
                 <h2 className="text-[#EA785B] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-2 sm:mb-4">
                   Everything You Need for Smart Cooking
                 </h2>
-                <p className="text-[#4B5563] text-[14px] sm:text-lg md:text-xl lg:text-2xl max-w-4xl font-inter">
+                <p className="text-[#4B5563] text-[14px] sm:text-lg md:text-xl lg:text-2xl max-w-4xl font-inter mt-1">
                   Discover the power of AI-driven culinary creativity with
                   features designed to transform your cooking experience.
                 </p>
@@ -1618,7 +1623,7 @@ const Hero1 = () => {
 
               {/* MOBILE LAYOUT - Title above phone */}
               <div className="block lg:hidden">
-                <div className="mb-6 text-center">
+                <div className="mt-6 mb-6 text-center">
                   <div
                     className={`transition-opacity duration-1000 ${
                       isTextVisible ? "opacity-100" : "opacity-0"
@@ -1636,7 +1641,7 @@ const Hero1 = () => {
                 </div>
 
                 {/* Phone container for mobile */}
-                <div className="flex justify-center mb-6">
+                <div className="flex justify-center ">
                   <div
                     ref={section3PhoneRef}
                     className={`relative flex-shrink-0 ${

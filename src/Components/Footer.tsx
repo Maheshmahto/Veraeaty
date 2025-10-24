@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
         
     
           {/* Mobile Text */}
-          <div className="w-full mt-2 text-center md:hidden">
+          <div className="w-full text-center md:hidden">
             <p className="text-xs leading-relaxed text-gray-900">
               AI-powered food generation for the future of cooking.
             </p>
