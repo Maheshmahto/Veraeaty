@@ -301,7 +301,7 @@
 //       {/* Section 1: Main Hero with Background */}
 //       <section
 //         ref={heroSectionRef}
-//         className=" bg-white pt-16 pb-24 px-8"
+//         className="px-8 pt-16 pb-24 bg-white "
 //         style={{
 //           backgroundImage: "url(/Background.png)",
 //           backgroundSize: "cover",
@@ -323,22 +323,22 @@
 //           <ChefHat className="w-8 h-8" />
 //         </div>
 
-//         <div className="max-w-7xl mx-auto relative z-10">
-//           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+//         <div className="relative z-10 mx-auto max-w-7xl">
+//           <div className="grid items-center grid-cols-1 gap-8 lg:grid-cols-2">
 //             <div className="space-y-6 animate-fadeInUp">
-//               <h1 className="text-6xl lg:text-7xl font-bold leading-tight">
+//               <h1 className="text-6xl font-bold leading-tight lg:text-7xl">
 //                 Say Goodbye to
 //                 <br />
 //                 <span className="text-[#EA785B]">"Aaj Kya Banaye?"</span>
 //               </h1>
 
-//               <p className="text-gray-600 text-lg max-w-md">
+//               <p className="max-w-md text-lg text-gray-600">
 //                 A smart, personalized AI meal planner for busy housewife. Made
 //                 for moms, families, and food lovers who want variety without the
 //                 stress.
 //               </p>
 
-//               <button className="bg-coral-500 hover:bg-coral-600 text-white px-6 py-3 rounded-full flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+//               <button className="flex items-center gap-2 px-6 py-3 text-white transition-all duration-300 rounded-full bg-coral-500 hover:bg-coral-600 hover:scale-105 hover:shadow-lg">
 //                 <Bell className="w-5 h-5" />
 //                 Join Waitlist
 //               </button>
@@ -354,7 +354,7 @@
 //                 <img
 //                   src={phoneimg}
 //                   alt="VeraEaty App"
-//                   className="w-full h-full object-contain"
+//                   className="object-contain w-full h-full"
 //                 />
 //               </div>
 //             </div>
@@ -365,17 +365,17 @@
 //       {/* Section 2: What is VeraEaty - with ref for pinning */}
 //       <section
 //         ref={aboutSectionRef}
-//         className="bg-gradient-to-br from-pink-50 via-white to-coral-50 py-24 px-8 relative overflow-hidden bg-transparent z-0"
+//         className="relative z-0 px-8 py-24 overflow-hidden bg-transparent bg-gradient-to-br from-pink-50 via-white to-coral-50"
 //         id="about"
 //       >
 //         {/* Background Decorative Shape */}
-//         <div className="absolute top-0 left-0 w-96 h-96 bg-coral-100 rounded-full opacity-20 blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-//         <div className="absolute bottom-0 right-0 w-96 h-96 bg-pink-100 rounded-full opacity-20 blur-3xl translate-x-1/2 translate-y-1/2"></div>
+//         <div className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 rounded-full w-96 h-96 bg-coral-100 opacity-20 blur-3xl"></div>
+//         <div className="absolute bottom-0 right-0 translate-x-1/2 translate-y-1/2 bg-pink-100 rounded-full w-96 h-96 opacity-20 blur-3xl"></div>
 
-//         <div className="max-w-7xl mx-auto relative ">
-//           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+//         <div className="relative mx-auto max-w-7xl ">
+//           <div className="grid items-center grid-cols-1 gap-16 lg:grid-cols-2">
 //             <div className="relative order-2 lg:order-1 animate-fadeInUp">
-//               <div className="relative mx-auto max-w-sm">
+//               <div className="relative max-w-sm mx-auto">
 //                 <div className="">
 //                   <>
 //                     <div
@@ -404,23 +404,23 @@
 //               </div>
 //             </div>
 
-//             <div className="space-y-8 order-1 lg:order-2 animate-fadeInUp">
-//               <h2 className="text-4xl lg:text-5xl font-bold text-gray-900">
+//             <div className="order-1 space-y-8 lg:order-2 animate-fadeInUp">
+//               <h2 className="text-4xl font-bold text-gray-900 lg:text-5xl">
 //                 What is <span className="text-coral-500">VeraEaty?</span>
 //               </h2>
 
-//               <p className="text-gray-600 text-lg">
+//               <p className="text-lg text-gray-600">
 //                 VeraEaty is an AI-powered meal planning assistant that helps
 //                 you:
 //               </p>
 
 //               <div className="space-y-6">
-//                 <div className="flex gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-//                   <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-coral-100 flex items-center justify-center">
+//                 <div className="flex gap-4 p-4 transition-shadow bg-white shadow-sm rounded-xl hover:shadow-md">
+//                   <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 rounded-xl bg-coral-100">
 //                     <Sparkles className="w-6 h-6 text-coral-500" />
 //                   </div>
 //                   <div>
-//                     <h3 className="font-semibold text-lg mb-1 text-gray-900">
+//                     <h3 className="mb-1 text-lg font-semibold text-gray-900">
 //                       Meals Designed for You
 //                     </h3>
 //                     <p className="text-gray-600">
@@ -430,12 +430,12 @@
 //                   </div>
 //                 </div>
 
-//                 <div className="flex gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-//                   <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
+//                 <div className="flex gap-4 p-4 transition-shadow bg-white shadow-sm rounded-xl hover:shadow-md">
+//                   <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-green-100 rounded-xl">
 //                     <Calendar className="w-6 h-6 text-green-600" />
 //                   </div>
 //                   <div>
-//                     <h3 className="font-semibold text-lg mb-1 text-gray-900">
+//                     <h3 className="mb-1 text-lg font-semibold text-gray-900">
 //                       Groceries, Perfectly Planned
 //                     </h3>
 //                     <p className="text-gray-600">
@@ -445,12 +445,12 @@
 //                   </div>
 //                 </div>
 
-//                 <div className="flex gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-//                   <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
+//                 <div className="flex gap-4 p-4 transition-shadow bg-white shadow-sm rounded-xl hover:shadow-md">
+//                   <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-orange-100 rounded-xl">
 //                     <ChefHat className="w-6 h-6 text-orange-600" />
 //                   </div>
 //                   <div>
-//                     <h3 className="font-semibold text-lg mb-1 text-gray-900">
+//                     <h3 className="mb-1 text-lg font-semibold text-gray-900">
 //                       Cook Effortlessly, Waste Nothing
 //                     </h3>
 //                     <p className="text-gray-600">
@@ -467,21 +467,21 @@
 
 //       {/* Section 3: Features - UNCHANGED */}
 
-//       <section className="bg-white py-24 px-8" id="features">
-//         <div className=" mx-10">
-//           <div className="text-start mb-16 animate-fadeInUp">
-//             <h2 className="text-orange-500 text-4xl lg:text-6xl font-bold mb-4">
+//       <section className="px-8 py-24 bg-white" id="features">
+//         <div className="mx-10 ">
+//           <div className="mb-16 text-start animate-fadeInUp">
+//             <h2 className="mb-4 text-4xl font-bold text-orange-500 lg:text-6xl">
 //               Everything You Need for Smart Cooking
 //             </h2>
-//             <p className="text-gray-600 text-2xl max-w-4xl">
+//             <p className="max-w-4xl text-2xl text-gray-600">
 //               Discover the power of AI-driven culinary creativity with features
 //               designed to transform your cooking experience.
 //             </p>
 //           </div>
 
-//           <div className="flex flex-col lg:flex-row items-center justify-center gap-12 mb-20">
+//           <div className="flex flex-col items-center justify-center gap-12 mb-20 lg:flex-row">
 //             {/* Left Text Column - Only visible when feature is on left side */}
-//             <div className="lg:w-1/2 space-y-6">
+//             <div className="space-y-6 lg:w-1/2">
 //               {features[currentFeatureIndex].side === "left" && (
 //                 <div
 //                   className={`transition-opacity duration-1000 ${
@@ -501,7 +501,7 @@
 //             </div>
 
 //             {/* Center Image Container - Fixed in center */}
-//             <div className="relative animate-fadeInUp flex-shrink-0">
+//             <div className="relative flex-shrink-0 animate-fadeInUp">
 //               <div className="relative mx-auto w-[330px]">
 //                 <div className="relative bg-gradient-to-b from-gray-900 to-gray-800 rounded-[3rem] p-3 shadow-2xl">
 //                   <div className="bg-white rounded-[2.5rem] overflow-hidden">
@@ -522,7 +522,7 @@
 //             </div>
 
 //             {/* Right Text Column - Only visible when feature is on right side */}
-//             <div className="lg:w-1/2 space-y-6">
+//             <div className="space-y-6 lg:w-1/2">
 //               {features[currentFeatureIndex].side === "right" && (
 //                 <div
 //                   className={`transition-opacity duration-1000 ${
@@ -550,3 +550,15 @@
 // };
 
 // export default Hero;
+
+      <div className="flex justify-center flex-1 gap-3 lg:justify-end">
+            {/* <a href="#" className="flex items-center justify-center transition-colors bg-gray-900 rounded-full w-7 h-7 hover:bg-gray-700">
+              <Instagram className="w-3 h-3 text-white" />
+            </a>
+            <a href="#" className="flex items-center justify-center transition-colors bg-gray-900 rounded-full w-7 h-7 hover:bg-gray-700">
+              <Facebook className="w-3 h-3 text-white" />
+            </a>
+            <a href="#" className="flex items-center justify-center transition-colors bg-gray-900 rounded-full w-7 h-7 hover:bg-gray-700">
+              <Linkedin className="w-3 h-3 text-white" />
+            </a> */}
+          </div>
