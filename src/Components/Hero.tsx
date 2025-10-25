@@ -70,8 +70,9 @@ const Hero1 = () => {
   const section2Ref = useRef<HTMLDivElement | null>(null);
   const phoneRef = useRef<HTMLDivElement | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
-  const section3PhoneRef = useRef<HTMLDivElement | null>(null);
   const section3HeadingRef = useRef<HTMLDivElement | null>(null);
+  // Added missing ref for the Section 3 phone mockup used in mobile layout
+  const section3PhoneRef = useRef<HTMLDivElement | null>(null);
   const scrollTimeout = useRef<number | null>(null);
   const overlayTimeout = useRef<number | null>(null);
   const touchStartRef = useRef<number | null>(null);
@@ -88,6 +89,9 @@ const Hero1 = () => {
 
   // Track scroll direction per section transition
   const scrollDirectionRef = useRef<"down" | "up">("down");
+
+  // Track phone position for reverse animations
+  const phonePositionRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   // Update header visibility when section changes
   useEffect(() => {
@@ -183,21 +187,16 @@ const Hero1 = () => {
   // CRITICAL FIX: Force scroll reset whenever we enter Section 2
   useEffect(() => {
     if (currentSection === 2 && section2ScrollableRef.current) {
-      // Use setTimeout to ensure DOM is ready
       setTimeout(() => {
         if (section2ScrollableRef.current) {
           section2ScrollableRef.current.scrollTop = 0;
         }
       }, 0);
-
-      // Also try with a small delay
       setTimeout(() => {
         if (section2ScrollableRef.current) {
           section2ScrollableRef.current.scrollTop = 0;
         }
       }, 100);
-
-      // And one more at 300ms
       setTimeout(() => {
         if (section2ScrollableRef.current) {
           section2ScrollableRef.current.scrollTop = 0;
@@ -392,7 +391,7 @@ const Hero1 = () => {
     });
   };
 
-  const showThirdSection = () => {
+ const showThirdSection = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
     setShowSection3Heading(false);
@@ -407,18 +406,13 @@ const Hero1 = () => {
       setIsFeatureVisible(true);
       setIsTextVisible(true);
       setIsTransitioning(false);
-
-      // Force the phone to be visible in Section 3
-      if (section3PhoneRef.current) {
-        gsap.set(section3PhoneRef.current, { opacity: 1 });
-      }
       return;
     }
 
-    // DESKTOP: Original animation with proper sequencing
-    // First, ensure Section 3 phone is hidden
-    if (section3PhoneRef.current) {
-      gsap.set(section3PhoneRef.current, { opacity: 0, display: "none" });
+    // DESKTOP: Store current position for reverse animation
+    if (phoneRef.current) {
+      const currentTransform = gsap.getProperty(phoneRef.current, "x");
+      phonePositionRef.current.x = typeof currentTransform === "number" ? currentTransform : 0;
     }
 
     const tl = gsap.timeline({
@@ -432,6 +426,7 @@ const Hero1 = () => {
       setIsTransitioning(false);
       return;
     }
+
     const phoneRect = phoneEl.getBoundingClientRect();
     const currentLeft = phoneRect.left + phoneRect.width / 2;
     const currentTop = phoneRect.top + phoneRect.height / 2;
@@ -459,43 +454,32 @@ const Hero1 = () => {
         },
         0.6
       )
+      // Fade out phone smoothly while showing Section 3 content
       .to(
-        carouselRef.current,
-        { opacity: 0, duration: 0.5, ease: "power2.inOut" },
-        1.8
+        phoneRef.current,
+        { 
+          opacity: 0, 
+          duration: 0.6, 
+          ease: "power2.inOut" 
+        },
+        1.5
       )
+      // Start showing Section 3 content before phone completely disappears
       .call(
         () => {
-          // First hide the Section 2 phone completely
-          gsap.set(phoneRef.current, { opacity: 0, display: "none" });
-
-          // Reset its position for next time
-          gsap.set(phoneRef.current, {
-            x: "-40vw",
-            y: "0%",
-          });
-
-          // Then show Section 3 phone in the same position
-          gsap.set(section3PhoneRef.current, { display: "block", opacity: 0 });
-          gsap.to(section3PhoneRef.current, {
-            opacity: 1,
-            duration: 0.3,
-            ease: "power2.out",
-          });
-
           setShowSection3Heading(true);
           setCurrentFeatureIndex(0);
           setIsFeatureVisible(true);
           setIsTextVisible(true);
         },
         [],
-        2.3
+        1.6
       )
       .fromTo(
         section3HeadingRef.current,
         { opacity: 0, y: 30 },
         { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" },
-        2.4
+        1.7
       );
 
     gsap.to(containerRef.current, {
@@ -518,67 +502,57 @@ const Hero1 = () => {
     if (isMobile) {
       setCurrentSection(2);
       setIsTransitioning(false);
-
-      // Hide Section 3 phone
-      if (section3PhoneRef.current) {
-        gsap.set(section3PhoneRef.current, { opacity: 0 });
-      }
       return;
     }
 
-    // DESKTOP: Original animation
-    // CRITICAL FIX: Reset scroll IMMEDIATELY before any animation starts
+    // DESKTOP: Fixed reverse animation - center to left
+    // Reset scroll position
     if (section2ScrollableRef.current) {
       section2ScrollableRef.current.scrollTop = 0;
     }
 
-    // Also update the section state early
-    setCurrentSection(2);
-
     const tl = gsap.timeline({
       onComplete: () => {
         setIsTransitioning(false);
-        // Double-check scroll position after animation
         if (section2ScrollableRef.current) {
           section2ScrollableRef.current.scrollTop = 0;
         }
-        // CRITICAL: Force carousel visibility at the end
         if (carouselRef.current) {
           gsap.set(carouselRef.current, { opacity: 1, display: "block" });
         }
       },
     });
 
-    tl.to(section3HeadingRef.current, {
-      opacity: 0,
-      y: -30,
-      duration: 0.4,
-      ease: "power2.inOut",
-    })
-      .call(
-        () => {
-          gsap.set(section3PhoneRef.current, { opacity: 0, display: "none" });
-          gsap.set(phoneRef.current, {
-            opacity: 1,
-            display: "block",
-            x: "0%",
-            y: "calc(50vh - 275px)",
-            width: "330px",
-            height: "550px",
-          });
-          // CRITICAL: Reset carousel to hidden state
-          gsap.set(carouselRef.current, { opacity: 0, display: "block" });
-        },
-        undefined,
-        0.4
-      )
+    // tl.to(section3HeadingRef.current, {
+    //   opacity: 0,
+    //   y: -30,
+    //   duration: 0.4,
+    //   ease: "power2.inOut",
+    // })
+    // .to(
+    //   phoneRef.current,
+    //   {
+    //     x: "-40vw",
+    //     y: "0%",
+    //     duration: 1.2,
+    //     ease: "power2.inOut",
+    //   },
+    //   0.5
+    // )
+    // STEP 1: Show phone at center first (where it was in section 3)
+    tl.set(phoneRef.current, { opacity: 1, display: "block" })
+      .to(section3HeadingRef.current, {
+        opacity: 0,
+        y: -30,
+        duration: 0.4,
+        ease: "power2.inOut",
+      })
+      // STEP 2: Animate phone from center to left
       .to(
         phoneRef.current,
         {
           x: "-40vw",
           y: "0%",
-          width: "320px",
-          height: "auto",
           duration: 1.2,
           ease: "power2.inOut",
         },
@@ -595,6 +569,8 @@ const Hero1 = () => {
         { opacity: 1, x: 0, duration: 0.8, ease: "power2.out" },
         1.2
       );
+
+    setCurrentSection(2);
 
     gsap.to(containerRef.current, {
       backgroundImage:
@@ -866,7 +842,7 @@ const Hero1 = () => {
         }
       }
 
-      // Handle Section 3 feature transitions - FIXED LOGIC
+      // Handle Section 3 feature transitions
       if (currentSection === 3) {
         if (delta > 0) {
           // Scrolling DOWN in Section 3
@@ -906,7 +882,7 @@ const Hero1 = () => {
             showSecondSectionFromThird();
           }
         }
-        return; // Prevent further processing
+        return;
       }
 
       // Only trigger on significant swipe (more than 80px for better control)
@@ -1105,21 +1081,21 @@ const Hero1 = () => {
           from { opacity: 0; transform: scale(0.5); }
           to { opacity: 1; transform: scale(1); }
         }
-       @keyframes slideUpFromBottom {
-  from { transform: translateY(100vh); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-@keyframes slideDownFromTop {
-  from { transform: translateY(-100vh); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
+        @keyframes slideUpFromBottom {
+          from { transform: translateY(100vh); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes slideDownFromTop {
+          from { transform: translateY(-100vh); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
 
-.animate-slideUpFromBottom { 
-  animation: slideUpFromBottom 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; 
-}
-.animate-slideDownFromTop { 
-  animation: slideDownFromTop 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; 
-}
+        .animate-slideUpFromBottom { 
+          animation: slideUpFromBottom 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; 
+        }
+        .animate-slideDownFromTop { 
+          animation: slideDownFromTop 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; 
+        }
           
         .animate-slideInRight { animation: slideInRight 0.5s ease-out forwards; }
         .animate-slideInLeft { animation: slideInLeft 0.5s ease-out forwards; }
@@ -1131,8 +1107,8 @@ const Hero1 = () => {
         .animate-pulse-slow { animation: pulse-slow 3s ease-in-out infinite; }
         .animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
         .animate-fade-in { animation: fade-in 0.6s ease-out forwards; }
-       .animate-slideUpFromBottom { animation: slideUpFromBottom 1s ease-out forwards; }
-.animate-slideDownFromTop { animation: slideDownFromTop 1s ease-out forwards; }
+        .animate-slideUpFromBottom { animation: slideUpFromBottom 1s ease-out forwards; }
+        .animate-slideDownFromTop { animation: slideDownFromTop 1s ease-out forwards; }
 
         /* Mobile section transitions */
         .mobile-section {
@@ -1143,17 +1119,6 @@ const Hero1 = () => {
         }
         .mobile-section-enter-up {
           animation: slideDownFromTop 0.8s ease-out forwards;
-        }
-
-        /* Mobile section transitions */
-        .mobile-section {
-          transition: none !important;
-        }
-        .mobile-section-enter-down {
-          animation: slideUpFromBottom 0.5s ease-out forwards;
-        }
-        .mobile-section-enter-up {
-          animation: slideDownFromTop 0.5s ease-out forwards;
         }
       `}</style>
 
@@ -1272,19 +1237,7 @@ const Hero1 = () => {
           transition: "background-image 0.8s ease-in-out",
         }}
       >
-        {/* Decorative icons - responsive */}
-        {/* <div className="absolute text-orange-400 top-100 sm:top-20 left-4 sm:left-10 opacity-30 animate-pulse-slow">
-          <Bell className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
-        </div>
-        <div className="absolute text-orange-400 top-32 sm:top-40 right-8 sm:right-20 opacity-30 animate-bounce-slow">
-          <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
-        </div>
-        <div className="absolute text-orange-400 bottom-32 sm:bottom-40 left-8 sm:left-20 opacity-30 animate-pulse-slow">
-          <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
-        </div>
-        <div className="absolute text-orange-400 bottom-16 sm:bottom-20 right-4 sm:right-10 opacity-30 animate-bounce-slow">
-          <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
-        </div> */}
+        {/* Decorative icons */}
         {currentSection === 1 && (
           <>
             <div className="absolute text-orange-400 top-100 sm:top-20 left-4 sm:left-10 opacity-30 animate-pulse-slow">
@@ -1303,13 +1256,13 @@ const Hero1 = () => {
         )}
 
         {/* SECTION 1 & 2 Container */}
-        <div className="relative z-10 px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2  md:gap-4 items-center min-h-[100vh]">
+        <div className="relative z-10 px-4 mx-auto lg:max-w-[1300px] 2xl:max-w-[1500px] md:pl-16 sm:px-6 md:px-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 md:gap-4 items-center min-h-[100vh]">
             {/* SECTION 1 Text */}
             <div
               ref={section1Ref}
-              className={`mobile-section section-1-text space-y-3 sm:space-y-4 md:space-y-6 transition-opacity duration-800 order-1 lg:order-1 pt-20 sm:pt-16 md:pt-20 lg:pt-0 text-center lg:text-left ${     currentSection === 1
-                
+              className={`mobile-section section-1-text space-y-3 sm:space-y-4 md:space-y-6 transition-opacity duration-800 order-1 lg:order-1 pt-20 sm:pt-16 md:pt-20 lg:pt-0 text-center lg:text-left ${
+                currentSection === 1
                   ? "opacity-100 block"
                   : "opacity-0 hidden lg:block"
               } ${
@@ -1318,11 +1271,11 @@ const Hero1 = () => {
                   : ""
               }`}
             >
-              <h1 className="text-3xl font-semibold leading-tight sm:text-4xl md:text-4xl lg:text-6xl">
+              <h1 className="text-3xl font-bold leading-tight sm:text-4xl md:text-4xl lg:text-6xl xl:text-[60px] 2xl:text-[75px]">
                 Say Goodbye to <br />
                 <span className="text-[#EA785B]">"Aaj Kya Banaye?"</span>
               </h1>
-              <p className="max-w-md mx-auto text-[13px] black text- sm:text-sm md:text-sm lg:mx-0 from-light">
+              <p className="max-w-lvh mx-auto text-[13px] xl:text-[15px] 2xl:text-[18px] black text- sm:text-sm md:text-sm lg:mx-0 from-light">
                 A smart, personalized AI meal planner for busy households. Made
                 for moms, families, and food lovers who want variety without the
                 stress.
@@ -1330,18 +1283,18 @@ const Hero1 = () => {
               <div className="flex justify-center mb-7 lg:justify-start">
                 <button
                   onClick={openWaitlistPopup}
-                  className="bg-[linear-gradient(90deg,#EA785B_0%,#FF8953_100%)] hover:opacity-90 text-white px-5 py-2.5 sm:px-6 sm:py-2  lg:py-3 rounded-full flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:shadow-lg text-sm sm:text-base md:text-lg"
+                  className="bg-[linear-gradient(90deg,#EA785B_0%,#FF8953_100%)] hover:opacity-90 text-white px-5 py-2.5 sm:px-6 sm:py-2 lg:py-3 rounded-full flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:shadow-lg text-sm sm:text-base md:text-lg"
                 >
                   <Bell className="w-4 h-4 mb-1 sm:w-5 sm:h-5" /> Join Waitlist
                 </button>
               </div>
             </div>
 
-            {/* Phone Container - responsive */}
+            {/* Phone Container */}
             <div className="relative flex justify-center order-2 pb-20 lg:justify-start lg:order-last lg:pb-0 animate-zoomIn">
               <div
                 ref={phoneRef}
-                className={`mobile-section relative w-[84%]   sm:w-[80%] md:w-[340px] lg:w-[320px] aspect-[20/24] lg:aspect-[10/16] 2xl:aspect-[12/19] md:mt-0 lg:mt-16 mx-auto ${
+                className={`mobile-section relative w-[84%] sm:w-[80%] md:w-[340px] lg:w-[320px] xl:w-[380px] aspect-[20/24] lg:aspect-[13/16] 2xl:aspect-[12/19] md:mt-0 lg:mt-16 mx-auto ${
                   currentSection === 1 || currentSection === 2
                     ? "block"
                     : "hidden lg:block"
@@ -1359,26 +1312,26 @@ const Hero1 = () => {
                       className="inset-0 object-contain w-full h-full animate-zoomIn"
                     />
 
-                    {/* Overlay Images - scaled for mobile */}
+                    {/* Overlay Images */}
                     {showOverlay1 && (
                       <img
                         src={img1}
                         alt=""
-                        className="overlay-1 w-32 sm:w-40 md:w-48 lg:w-60 h-auto z-100000 top-[-12px] sm:top-[-20px] md:top-[-28px] lg:top-[-32px] left-[-20px] sm:left-[-30px] md:left-[-40px] lg:left-[-125px] absolute bg-transparent"
+                        className="overlay-1 w-32 sm:w-40 md:w-48 lg:w-50 h-auto z-100000 top-[-12px] sm:top-[-20px] md:top-[-28px] lg:top-[-32px] left-[-20px] sm:left-[-30px] md:left-[-40px] lg:left-[-110px] absolute bg-transparent"
                       />
                     )}
                     {showOverlay2 && (
                       <img
                         src={img3}
                         alt=""
-                        className="overlay-2 w-24 sm:w-30 md:w-36 lg:w-42 h-auto object-contain z-10000 absolute top-50 sm:top-64 md:top-72 lg:top-60 right-[-15px] sm:right-[-35px] md:right-[-50px] lg:right-[-60px]"
+                        className="overlay-2 w-24 sm:w-30 md:w-36 lg:w-42 h-auto object-contain z-10000 absolute top-50 sm:top-64 md:top-72 lg:top-60 right-[-15px] sm:right-[-35px] md:right-[-50px] lg:right-[-65px]"
                       />
                     )}
                     {showOverlay3 && (
                       <img
                         src={img2}
                         alt=""
-                        className="overlay-3 w-24 sm:w-28 md:w-32 lg:w-40 h-auto object-contain absolute top-60 sm:top-80 md:top-80 lg:top-100  left-[-16px] sm:left-[-35px] md:left-[-50px] lg:left-[-80px] 2xl:left-[-100px]"
+                        className="overlay-3 w-24 sm:w-28 md:w-32 lg:w-40 h-auto object-contain absolute top-60 sm:top-80 md:top-80 lg:top-80 left-[-16px] sm:left-[-40px] md:left-[-50px] lg:left-[-70px] 2xl:left-[-100px]"
                       />
                     )}
                   </span>
@@ -1402,12 +1355,12 @@ const Hero1 = () => {
             </div>
 
             {/* SECTION 2 Content */}
-            <div
+            {/* <div
               ref={section2Ref}
               className={`mobile-section absolute inset-0 transition-all duration-800 ${
                 currentSection === 2
                   ? "opacity-100 z-20 pointer-events-auto block"
-                  : "opacity-0 z-0 pointer-events-none hidden lg:block"
+                 : "opacity-0 z-0 pointer-events-none hidden"
               } ${
                 isMobile && currentSection === 2
                   ? getMobileAnimationClass()
@@ -1415,9 +1368,7 @@ const Hero1 = () => {
               }`}
             >
               <div className="w-full h-full lg:max-w-7xl lg:mx-auto lg:flex lg:items-center lg:px-8">
-                {/* Mobile Layout - Fixed Scrolling with Proper Background */}
                 <div className="flex flex-col w-full h-full lg:hidden bg-gradient-to-br from-rose-50 via-orange-50 to-white">
-                  {/* Scrollable Container */}
                   <div
                     ref={section2ScrollableRef}
                     className="w-full h-full overflow-y-auto overscroll-contain"
@@ -1429,7 +1380,6 @@ const Hero1 = () => {
                   >
                     <div className="flex flex-col min-h-full px-4 pb-10">
                       <div className="flex-1 flex-shrink-0 max-w-md mx-auto space-y-2">
-                        {/* Phone Image Card */}
                         <div className="relative pt-2 rounded-3xl">
                           <div className="relative w-48 mx-auto h-80">
                             <img
@@ -1437,7 +1387,162 @@ const Hero1 = () => {
                               alt="VeraEaty App"
                               className="object-contain w-full h-full"
                             />
-                            {/* Show current carousel image inside phone */}
+                            <div className="absolute top-[2px] left-[13px] right-[13px] bottom-[2px] overflow-hidden rounded-[30px]">
+                              <img
+                                src={images[currentImageIndex]}
+                                alt={`VeraEaty feature ${currentImageIndex + 1}`}
+                                className="object-cover w-full h-full transition-opacity duration-500"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className={`${isFirstSection2Visit ? "pb-2" : "pb-2"}`}>
+                          <h2 className="text-2xl sm:text-3xl font-bold text-[#EA785B] text-center mb-1">
+                            What is VeraEaty?
+                          </h2>
+                          <p className="text-black text-[14px] font-[Poppins] font-light text-center mb-3">
+                            VeraEaty is an AI-powered meal planning assistant that helps you:
+                          </p>
+
+                          <div className="space-y-4">
+                            <div className="flex items-center justify-center gap-3 transition-all">
+                              <div className="flex items-center justify-center flex-shrink-0 w-12 h-12">
+                                <img src={bg1} alt="" className="" />
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-base mb-1 text-[#EA785B]">
+                                  Design Meal Plans
+                                </h3>
+                                <p className="text-sm leading-relaxed text-gray-700">
+                                  Get personalized meal plans that match your taste, goals, and daily routine.
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-3 transition-all rounded-2xl">
+                              <div className="flex items-center justify-center flex-shrink-0 w-12 h-12">
+                                <img src={bg2} alt="" className="" />
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-base mb-1 text-[#EA785B]">
+                                  Plan Groceries
+                                </h3>
+                                <p className="text-sm leading-relaxed text-gray-700">
+                                  Shop smarter with AI-generated lists that save time and prevent overspending.
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-3 transition-all rounded-2xl">
+                              <div className="flex items-center justify-center flex-shrink-0 w-12 h-12">
+                                <img src={bg3} alt="" className="" />
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-base mb-1 text-[#EA785B]">
+                                  Cook Effortlessly
+                                </h3>
+                                <p className="text-sm leading-relaxed text-gray-700">
+                                  Fully stress-free cooking with thoughtful planning that minimizes food waste.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="h-8"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="items-center hidden w-full px-4 lg:flex">
+                  <div className="w-1/2"></div>
+                  <div className="w-1/2 pl-4 space-y-4">
+                    <h2 className="text-4xl lg:text-5xl font-bold text-[#EA785B]">
+                      What is VeraEaty?
+                    </h2>
+                    <p className="text-black text-2xl font-[Poppins] font-light">
+                      VeraEaty is an AI-powered meal planning assistant that helps you:
+                    </p>
+                    <div className="space-y-6">
+                      <div className="flex gap-3">
+                        <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-orange-100 rounded-xl">
+                          <img src={bg1} alt="" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg mb-1 text-[#EA785B]">
+                            Design Meal Plans
+                          </h3>
+                          <p className="text-gray-700">
+                            Get personalized meal plans that match your taste, goals, and daily routine.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-green-100 rounded-xl">
+                          <img src={bg2} alt="" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg mb-1 text-[#EA785B]">
+                            Plan Groceries
+                          </h3>
+                          <p className="text-gray-700">
+                            Shop smarter with AI-generated lists that save time and prevent overspending.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-orange-100 rounded-xl">
+                          <img src={bg3} alt="" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg mb-1 text-[#EA785B]">
+                            Cook Effortlessly
+                          </h3>
+                          <p className="text-gray-700">
+                            Fully stress-free cooking with thoughtful planning that minimizes food waste.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div> */}
+            {/* SECTION 2 Content */}
+            <div
+              ref={section2Ref}
+              className={`mobile-section absolute inset-0 transition-all duration-800 ${
+                currentSection === 2
+                  ? "opacity-100 z-20 pointer-events-auto"
+                  : "opacity-0 z-0 pointer-events-none hidden"
+              } ${
+                isMobile && currentSection === 2
+                  ? getMobileAnimationClass()
+                  : ""
+              }`}
+            >
+              <div className="w-full h-full lg:max-w-7xl lg:mx-auto lg:flex lg:items-center lg:px-8">
+                {/* Mobile Layout */}
+                <div className="flex flex-col w-full h-full lg:hidden bg-gradient-to-br from-rose-50 via-orange-50 to-white">
+                  <div
+                    ref={section2ScrollableRef}
+                    className="w-full h-full overflow-y-auto overscroll-contain"
+                    style={{
+                      WebkitOverflowScrolling: "touch",
+                      touchAction: "pan-y",
+                      scrollBehavior: "smooth",
+                    }}
+                  >
+                    <div className="flex flex-col min-h-full px-4 pb-10">
+                      <div className="flex-1 flex-shrink-0 max-w-md mx-auto space-y-2">
+                        <div className="relative pt-2 rounded-3xl">
+                          <div className="relative w-48 mx-auto h-80">
+                            <img
+                              src={phoneimg}
+                              alt="VeraEaty App"
+                              className="object-contain w-full h-full"
+                            />
                             <div className="absolute top-[2px] left-[13px] right-[13px] bottom-[2px] overflow-hidden rounded-[30px]">
                               <img
                                 src={images[currentImageIndex]}
@@ -1450,7 +1555,6 @@ const Hero1 = () => {
                           </div>
                         </div>
 
-                        {/* Content Card with Conditional Padding */}
                         <div
                           className={`${
                             isFirstSection2Visit ? "pb-2" : "pb-2"
@@ -1465,8 +1569,8 @@ const Hero1 = () => {
                           </p>
 
                           <div className="space-y-4">
-                            <div className="flex items-center justify-center gap-3 transition-all ">
-                              <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 ">
+                            <div className="flex items-center justify-center gap-3 transition-all">
+                              <div className="flex items-center justify-center flex-shrink-0 w-12 h-12">
                                 <img src={bg1} alt="" className="" />
                               </div>
                               <div className="flex-1">
@@ -1480,8 +1584,8 @@ const Hero1 = () => {
                               </div>
                             </div>
 
-                            <div className="flex items-center gap-3 transition-all rounded-2xl ">
-                              <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 ">
+                            <div className="flex items-center gap-3 transition-all rounded-2xl">
+                              <div className="flex items-center justify-center flex-shrink-0 w-12 h-12">
                                 <img src={bg2} alt="" className="" />
                               </div>
                               <div className="flex-1">
@@ -1495,8 +1599,8 @@ const Hero1 = () => {
                               </div>
                             </div>
 
-                            <div className="flex items-center gap-3 transition-all rounded-2xl ">
-                              <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 ">
+                            <div className="flex items-center gap-3 transition-all rounded-2xl">
+                              <div className="flex items-center justify-center flex-shrink-0 w-12 h-12">
                                 <img src={bg3} alt="" className="" />
                               </div>
                               <div className="flex-1">
@@ -1510,8 +1614,6 @@ const Hero1 = () => {
                               </div>
                             </div>
                           </div>
-
-                          {/* Added extra space at bottom to ensure scrollability */}
                           <div className="h-8"></div>
                         </div>
                       </div>
@@ -1519,7 +1621,7 @@ const Hero1 = () => {
                   </div>
                 </div>
 
-                {/* Desktop Layout - Side by Side (Original) */}
+                {/* Desktop Layout */}
                 <div className="items-center hidden w-full px-4 lg:flex">
                   <div className="w-1/2"></div>
                   <div className="w-1/2 pl-4 space-y-4">
@@ -1539,7 +1641,7 @@ const Hero1 = () => {
                           <h3 className="font-semibold text-lg mb-1 text-[#EA785B]">
                             Design Meal Plans
                           </h3>
-                          <p className="text-gray-700 ">
+                          <p className="text-gray-700">
                             Get personalized meal plans that match your taste,
                             goals, and daily routine.
                           </p>
@@ -1581,9 +1683,7 @@ const Hero1 = () => {
           </div>
         </div>
 
-        {/* SECTION 3 - responsive */}
-        {/* SECTION 3 - responsive */}
-        {/* SECTION 3 - responsive */}
+        {/* SECTION 3 */}
         <div
           className={`mobile-section absolute inset-0 transition-opacity duration-800 ${
             currentSection === 3
@@ -1621,7 +1721,7 @@ const Hero1 = () => {
                 </p>
               </div>
 
-              {/* MOBILE LAYOUT - Title above phone */}
+              {/* MOBILE LAYOUT */}
               <div className="block lg:hidden">
                 <div className="mt-6 mb-6 text-center">
                   <div
@@ -1639,9 +1739,8 @@ const Hero1 = () => {
                     </h1>
                   </div>
                 </div>
-
-                {/* Phone container for mobile */}
-                <div className="flex justify-center ">
+                {/* Phone container for mobile - using the same phoneRef */}
+             <div className="flex justify-center ">
                   <div
                     ref={section3PhoneRef}
                     className={`relative flex-shrink-0 ${
@@ -1677,7 +1776,7 @@ const Hero1 = () => {
                 </div>
               </div>
 
-              {/* DESKTOP LAYOUT - Original side-by-side layout */}
+              {/* DESKTOP LAYOUT */}
               <div className="flex-col items-center justify-center hidden gap-4 lg:flex lg:flex-row lg:gap-0">
                 <div className="relative z-10 flex items-center justify-center space-y-6 lg:w-1/2 lg:pl-8 xl:pl-20">
                   {currentFeature.side === "left" && (
@@ -1697,15 +1796,15 @@ const Hero1 = () => {
                     </div>
                   )}
                 </div>
-
-                {/* Phone container for desktop */}
+                {/* Phone container for desktop - using the same phoneRef */}
                 <div
-                  ref={section3PhoneRef}
-                  className={`relative flex-shrink-0 ${
-                    currentSection === 3 ? "opacity-100" : "opacity-0"
+                  className={`relative flex-shrink-0 transition-opacity duration-1000 ${
+                    currentSection === 3 && isFeatureVisible
+                      ? "opacity-100"
+                      : "opacity-0"
                   }`}
                 >
-                  <div className="relative w-[260px] h-[450px] sm:w-[300px] sm:h-[500px] md:w-[305px] md:h-[520px]">
+                  <div className="relative w-[260px] h-[450px] sm:w-[300px] sm:h-[500px] md:w-[299px] md:h-[500px] 2xl:w-[350px] 2xl:h-[575px]">
                     <img
                       src={phonemocup}
                       alt="Phone Mockup"
@@ -1716,7 +1815,7 @@ const Hero1 = () => {
                       alt="Camera"
                       className="absolute z-20 w-12 h-3 transform -translate-x-1/2 pointer-events-none top-3 sm:top-3 left-1/2 sm:w-14 sm:h-4"
                     />
-                    <div className="absolute top-[5px] sm:top-[7px] left-[20px] sm:left-[27px] 2xl:left-[25px] right-[22px] sm:right-[29px] 2xl:right-[27px] bottom-[4px] sm:bottom-[5px] overflow-hidden rounded-[35px] sm:rounded-[38px] z-0">
+                    <div className="absolute top-[5px] sm:top-[7px] left-[20px] sm:left-[27px] 2xl:left-[35px] right-[22px] sm:right-[29px] 2xl:right-[37px] bottom-[4px] sm:bottom-[5px] 2xl:bottom-[9px] overflow-hidden rounded-[35px] sm:rounded-[38px] z-0">
                       <div
                         className={`w-full h-full transition-opacity duration-1000 ${
                           isFeatureVisible ? "opacity-100" : "opacity-0"
@@ -1755,7 +1854,7 @@ const Hero1 = () => {
           </div>
         </div>
 
-        {/* SECTION 4 - responsive */}
+        {/* SECTION 4 */}
         <div
           className={`mobile-section absolute inset-0 transition-opacity duration-800 ${
             currentSection === 4
@@ -1772,12 +1871,6 @@ const Hero1 = () => {
                 className="absolute top-40 sm:top-60 right-10 sm:right-20 w-48 h-56 sm:w-60 sm:h-70 rounded-full mix-blend-multiply filter blur-3xl opacity-10 bg-[#FF9B7D]"
                 style={{ animationDelay: "1s" }}
               ></div>
-            </div>
-            <div className="absolute inset-0 pointer-events-none">
-              {/* <div
-                className="absolute top-1/2 left-0 w-full h-px opacity-1 bg-gradient-to-r from-transparent via-[#FF9B7D] to-transparent"
-                style={{ animation: "pulse-slow 4s ease-in-out infinite" }}
-              ></div> */}
             </div>
             <div className="relative z-10 flex items-center justify-center h-full px-4 py-8 sm:px-8 sm:py-12">
               <div className="w-full">
@@ -1801,19 +1894,12 @@ const Hero1 = () => {
                       </div>
                       <div className="relative">
                         <div className="flex items-center justify-center w-20 h-20 border-2 shadow-2xl sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-3xl backdrop-blur-xl bg-gradient-to-br from-white/90 to-white/70 border-white/80 shadow-[#EA785B4D]">
-                          {/* <ChefHat className="w-10 h-10 text-orange-500 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 " /> */}
-
                           <img
                             src={hat}
                             alt=""
                             className="object-contain w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 2xl:h-16 2xl:w-16"
                           />
-                          <div
-                            className="absolute inset-0 rounded-3xl border-2 border-[#ec775a] opacity-10"
-                            // style={{
-                            //   animation: "pulse-slow 3s ease-in-out infinite",
-                            // }}
-                          ></div>
+                          <div className="absolute inset-0 rounded-3xl border-2 border-[#ec775a] opacity-10"></div>
                         </div>
                       </div>
                       <div className="relative">
@@ -1833,7 +1919,6 @@ const Hero1 = () => {
                             alt=""
                             className="object-contain w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12"
                           />
-                          {/* <Sparkles className="text-orange-500 w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12" /> */}
                         </div>
                       </div>
                     </div>
@@ -1879,7 +1964,7 @@ const Hero1 = () => {
           </div>
         </div>
 
-        {/* SECTION 5 - responsive */}
+        {/* SECTION 5 */}
         <div
           className={`mobile-section absolute inset-0 transition-opacity duration-800 ${
             currentSection === 5
